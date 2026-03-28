@@ -1,16 +1,9 @@
 {
-  "cli": {
-    "version": ">= 7.1.2"
-  },
   "build": {
     "preview": {
       "android": {
         "buildType": "apk"
       }
-    },
-    "production": {}
-  },
-  "submit": {
-    "production": {}
+    }
   }
 }
