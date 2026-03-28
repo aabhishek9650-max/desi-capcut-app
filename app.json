@@ -2,7 +2,7 @@
   "expo": {
     "name": "Desi Capcut",
     "slug": "desi-capcut-app",
-    "version": "1.0.5",
+    "version": "1.0.8",
     "sdkVersion": "50.0.0",
     "orientation": "portrait",
     "android": {
@@ -10,7 +10,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "24f3d838-3e9d-43ec-a485-1f6913c998f8"
+        "projectId": "24f3d838-3e9d-43ec-a485-1f6913c990f8"
       }
     }
   }
