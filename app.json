@@ -7,9 +7,6 @@
     "orientation": "portrait",
     "android": {
       "package": "com.abhishek.desicapcut"
-    },
-    "eas": {
-      "projectId": "87c32791-0941-477c-bc6f-983c197" 
     }
   }
 }
