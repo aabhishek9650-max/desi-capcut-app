@@ -1,17 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, SafeAreaView } from 'react-native';
+import * as ImagePicker from 'expo-image-picker'; // 1. Gallery access ke liye import
 
 export default function App() {
   const [isPro, setIsPro] = useState(false);
-  const [activeTab, setActiveTab] = useState('Edit');
+  const [selectedVideo, setSelectedVideo] = useState(null);
+
+  // 2. Asli Gallery kholne ka function
+  const openVideoPicker = async () => {
+    // Permission maango
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (status !== 'granted') {
+      Alert.alert("Permission Required", "Bhai, gallery access chahiye video select karne ke liye!");
+      return;
+    }
+
+    // Gallery kholo
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos, // Sirf video dikhega
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedVideo(result.assets[0].uri);
+      Alert.alert("Success", "Video select ho gayi! Ab hum ispar editing features add karenge.");
+    }
+  };
 
   const showFeature = (name) => {
-    Alert.alert("Desi Capcut", `${name} feature load ho raha hai...`);
+    Alert.alert("Desi Capcut", `${name} feature par kaam chal raha hai...`);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.logo}>Desi Capcut</Text>
         <TouchableOpacity style={styles.proButton} onPress={() => setIsPro(true)}>
@@ -20,15 +43,18 @@ export default function App() {
       </View>
 
       <ScrollView style={styles.content}>
-        {/* Main Banner */}
         <View style={styles.banner}>
-          <Text style={styles.bannerTitle}>New Project</Text>
-          <TouchableOpacity style={styles.startButton} onPress={() => showFeature('Gallery')}>
-            <Text style={styles.buttonText}>+ Create Video</Text>
+          <Text style={styles.bannerTitle}>
+            {selectedVideo ? "Video Ready to Edit" : "New Project"}
+          </Text>
+          {/* 3. Button par function connect kar diya */}
+          <TouchableOpacity style={styles.startButton} onPress={openVideoPicker}>
+            <Text style={styles.buttonText}>
+              {selectedVideo ? "Change Video" : "+ Create Video"}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Features Grid */}
         <View style={styles.grid}>
           <TouchableOpacity style={styles.card} onPress={() => showFeature('Auto Cut')}>
             <Text style={styles.cardIcon}>✂️</Text>
@@ -49,7 +75,6 @@ export default function App() {
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation */}
       <View style={styles.nav}>
         <Text style={styles.navItem}>Edit</Text>
         <Text style={styles.navItem}>Template</Text>
@@ -62,7 +87,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, marginTop: 30 },
   logo: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
   proButton: { backgroundColor: '#FFD700', padding: 8, borderRadius: 5 },
   proText: { fontWeight: 'bold', fontSize: 12 },
@@ -78,3 +103,4 @@ const styles = StyleSheet.create({
   nav: { flexDirection: 'row', justifyContent: 'space-around', padding: 15, borderTopWidth: 0.5, borderColor: '#333' },
   navItem: { color: '#fff' }
 });
+  
