@@ -1,5 +1,5 @@
 {
-  "name": "desi-capcut-app",
+  "name": "desi-capcut",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -9,11 +9,11 @@
     "web": "expo start --web"
   },
   "dependencies": {
-  "expo": "~50.0.0",
-  "react": "18.2.0",
-  "react-native": "0.73.6",
-    "expo-image-picker": "~14.7.1",
-},
+    "expo": "~50.0.0",
+    "react": "18.2.0",
+    "react-native": "0.73.6",
+    "expo-image-picker": "~14.7.1"
+  },
   "devDependencies": {
     "@babel/core": "^7.20.0"
   },
