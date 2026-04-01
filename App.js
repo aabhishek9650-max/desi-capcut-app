@@ -1,161 +1,137 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { 
+  StyleSheet, Text, View, TouchableOpacity, ScrollView, 
+  Image, StatusBar, Dimensions 
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient'; // Gradient ke liye
+
+const { width } = Dimensions.get('window');
 
 export default function App() {
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [selectedVideos, setSelectedVideos] = useState([]);
+  const [activeTab, setActiveTab] = useState('edit');
 
-  const pickVideo = async () => {
+  const pickVideos = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      allowsEditing: true,
+      allowsMultipleSelection: true,
+      selectionLimit: 10,
       quality: 1,
     });
-
-    if (!result.canceled) {
-      setSelectedVideo(result.assets[0].uri);
-      alert('Video Selected! Future features coming soon.');
-    }
+    if (!result.canceled) setSelectedVideos(result.assets);
   };
 
-  const FeatureCard = ({ icon, title, color }) => (
-    <TouchableOpacity style={styles.card}>
-      <MaterialCommunityIcons name={icon} size={32} color={color} />
-      <Text style={styles.cardText}>{title}</Text>
-    </TouchableOpacity>
-  );
-
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* Header */}
+      {/* 🌈 Colorful Header */}
       <View style={styles.header}>
-        <Text style={styles.logoText}>Desi <Text style={{color: '#00df9a'}}>Capcut</Text></Text>
-        <TouchableOpacity style={styles.proBadge}>
-          <Text style={styles.proText}>PRO ACTIVE</Text>
+        <View style={{flexDirection: 'row'}}>
+           <Text style={[styles.logoText, {color: '#FF007A'}]}>Desi </Text>
+           <Text style={[styles.logoText, {color: '#00FFE0'}]}>Capcut</Text>
+        </View>
+        <TouchableOpacity style={styles.iconCircle}>
+          <Ionicons name="flash" size={20} color="#FFD700" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Main Project Section */}
-        <TouchableOpacity style={styles.mainAction} onPress={pickVideo}>
-          <View style={styles.plusIconBg}>
-            <MaterialCommunityIcons name="plus" size={40} color="#000" />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {activeTab === 'edit' ? (
+          <View style={{width: '100%', alignItems: 'center'}}>
+            {selectedVideos.length === 0 ? (
+              <TouchableOpacity onPress={pickVideos}>
+                <LinearGradient
+                  colors={['#8E2DE2', '#4A00E0', '#00FFE0']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 1}}
+                  style={styles.newProjectBox}
+                >
+                  <View style={styles.innerBox}>
+                    <Ionicons name="add-circle" size={50} color="white" />
+                    <Text style={styles.newProjectText}>CREATE MAGIC</Text>
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.videoGrid}>
+                {selectedVideos.map((v, i) => (
+                  <View key={i} style={styles.videoCard}>
+                    <Image source={{ uri: v.uri }} style={styles.thumbnail} />
+                    <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.cardOverlay} />
+                  </View>
+                ))}
+              </View>
+            )}
           </View>
-          <Text style={styles.mainActionTitle}>New Project</Text>
-          <Text style={styles.mainActionSub}>Start creating magic</Text>
-        </TouchableOpacity>
-
-        {/* Quick Actions Grid */}
-        <View style={styles.grid}>
-          <FeatureCard icon="auto-fix" title="Auto Cut" color="#ff4d4d" />
-          <FeatureCard icon="layers-outline" title="Templates" color="#4da6ff" />
-          <FeatureCard icon="image-remove-background" title="BG Remove" color="#ffcc00" />
-          <FeatureCard icon="filter-variant" title="Filters" color="#00df9a" />
-        </View>
+        ) : (
+          /* ⚡ Colorful Templates */
+          <View style={styles.templateSection}>
+            <Text style={styles.sectionTitle}>TRENDING <Text style={{color: '#FF007A'}}>VIBES</Text></Text>
+            <View style={styles.templateGrid}>
+               {[1,2,3,4].map((item) => (
+                 <TouchableOpacity key={item} style={styles.templateCard}>
+                   <LinearGradient colors={['#333', '#111']} style={styles.tempImage}>
+                     <Ionicons name="play" size={30} color="#00FFE0" />
+                   </LinearGradient>
+                   <Text style={styles.tempTitle}>Viral Beat {item}</Text>
+                 </TouchableOpacity>
+               ))}
+            </View>
+          </View>
+        )}
       </ScrollView>
 
-      {/* Bottom Navigation (Mockup) */}
+      {/* 🎮 RGB Style Bottom Nav */}
       <View style={styles.bottomNav}>
-        <MaterialCommunityIcons name="movie-edit" size={24} color="#00df9a" />
-        <MaterialCommunityIcons name="Animation" size={24} color="#777" />
-        <MaterialCommunityIcons name="bell-outline" size={24} color="#777" />
-        <MaterialCommunityIcons name="account-outline" size={24} color="#777" />
+        <TouchableOpacity onPress={() => setActiveTab('edit')} style={styles.navBtn}>
+          <Ionicons name="cut" size={26} color={activeTab === 'edit' ? '#00FFE0' : '#444'} />
+          <Text style={{color: activeTab === 'edit' ? '#00FFE0' : '#444', fontSize: 10}}>EDIT</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setActiveTab('templates')} style={styles.navBtn}>
+          <Ionicons name="flame" size={26} color={activeTab === 'templates' ? '#FF007A' : '#444'} />
+          <Text style={{color: activeTab === 'templates' ? '#FF007A' : '#444', fontSize: 10}}>TEMPLATES</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navBtn}>
+          <LinearGradient colors={['#FF007A', '#8E2DE2']} style={styles.proCircle}>
+            <Ionicons name="person" size={20} color="white" />
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f0f0f',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  logoText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    letterSpacing: 1,
-  },
-  proBadge: {
-    backgroundColor: '#00df9a',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  proText: {
-    color: '#000',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  mainAction: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 20,
-    padding: 40,
-    alignItems: 'center',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  plusIconBg: {
-    backgroundColor: '#00df9a',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  mainActionTitle: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  mainActionSub: {
-    color: '#777',
-    fontSize: 14,
-    marginTop: 5,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  card: {
-    backgroundColor: '#1e1e1e',
-    width: '48%',
-    padding: 20,
-    borderRadius: 15,
-    alignItems: 'center',
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#222',
-  },
-  cardText: {
-    color: '#fff',
-    marginTop: 10,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 15,
-    borderTopWidth: 1,
-    borderTopColor: '#222',
-    backgroundColor: '#0f0f0f',
-  },
+  container: { flex: 1, backgroundColor: '#050505', paddingTop: 45 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 25, marginBottom: 20 },
+  logoText: { fontSize: 26, fontWeight: '900', letterSpacing: -1, textTransform: 'uppercase' },
+  iconCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#1A1A1A', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#333' },
+  
+  scrollContainer: { paddingBottom: 120 },
+  
+  newProjectBox: { width: width * 0.85, height: 200, borderRadius: 25, padding: 3, justifyContent: 'center', alignItems: 'center', elevation: 15, shadowColor: '#00FFE0', shadowOpacity: 0.5 },
+  innerBox: { width: '100%', height: '100%', backgroundColor: '#050505', borderRadius: 22, justifyContent: 'center', alignItems: 'center' },
+  newProjectText: { color: 'white', fontWeight: '900', fontSize: 18, marginTop: 10, letterSpacing: 2 },
+
+  videoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, padding: 12, justifyContent: 'center' },
+  videoCard: { width: (width/2)-20, height: 260, borderRadius: 20, overflow: 'hidden', backgroundColor: '#111', borderWidth: 1, borderColor: '#222' },
+  thumbnail: { width: '100%', height: '100%' },
+  cardOverlay: { position: 'absolute', bottom: 0, width: '100%', height: '40%' },
+
+  templateSection: { padding: 20 },
+  sectionTitle: { color: 'white', fontSize: 22, fontWeight: '900', marginBottom: 20 },
+  templateGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  templateCard: { width: (width/2)-25, marginBottom: 20 },
+  tempImage: { width: '100%', height: 240, borderRadius: 20, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#222' },
+  tempTitle: { color: '#EEE', marginTop: 10, fontWeight: '600', fontSize: 14, textAlign: 'center' },
+
+  bottomNav: { position: 'absolute', bottom: 25, left: 20, right: 20, height: 75, backgroundColor: 'rgba(20,20,20,0.95)', borderRadius: 40, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', borderWeight: 1, borderColor: '#333', elevation: 10 },
+  navBtn: { alignItems: 'center', justifyContent: 'center' },
+  proCircle: { width: 45, height: 45, borderRadius: 22.5, justifyContent: 'center', alignItems: 'center' }
 });
-        
+  
