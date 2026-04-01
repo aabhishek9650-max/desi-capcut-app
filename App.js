@@ -1,106 +1,161 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, SafeAreaView } from 'react-native';
-import * as ImagePicker from 'expo-image-picker'; // 1. Gallery access ke liye import
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function App() {
-  const [isPro, setIsPro] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
 
-  // 2. Asli Gallery kholne ka function
-  const openVideoPicker = async () => {
-    // Permission maango
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      Alert.alert("Permission Required", "Bhai, gallery access chahiye video select karne ke liye!");
-      return;
-    }
-
-    // Gallery kholo
+  const pickVideo = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos, // Sirf video dikhega
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: true,
       quality: 1,
     });
 
     if (!result.canceled) {
       setSelectedVideo(result.assets[0].uri);
-      Alert.alert("Success", "Video select ho gayi! Ab hum ispar editing features add karenge.");
+      alert('Video Selected! Future features coming soon.');
     }
   };
 
-  const showFeature = (name) => {
-    Alert.alert("Desi Capcut", `${name} feature par kaam chal raha hai...`);
-  };
+  const FeatureCard = ({ icon, title, color }) => (
+    <TouchableOpacity style={styles.card}>
+      <MaterialCommunityIcons name={icon} size={32} color={color} />
+      <Text style={styles.cardText}>{title}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.logo}>Desi Capcut</Text>
-        <TouchableOpacity style={styles.proButton} onPress={() => setIsPro(true)}>
-          <Text style={styles.proText}>{isPro ? "PRO ACTIVE" : "GET PRO"}</Text>
+        <Text style={styles.logoText}>Desi <Text style={{color: '#00df9a'}}>Capcut</Text></Text>
+        <TouchableOpacity style={styles.proBadge}>
+          <Text style={styles.proText}>PRO ACTIVE</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.banner}>
-          <Text style={styles.bannerTitle}>
-            {selectedVideo ? "Video Ready to Edit" : "New Project"}
-          </Text>
-          {/* 3. Button par function connect kar diya */}
-          <TouchableOpacity style={styles.startButton} onPress={openVideoPicker}>
-            <Text style={styles.buttonText}>
-              {selectedVideo ? "Change Video" : "+ Create Video"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Main Project Section */}
+        <TouchableOpacity style={styles.mainAction} onPress={pickVideo}>
+          <View style={styles.plusIconBg}>
+            <MaterialCommunityIcons name="plus" size={40} color="#000" />
+          </View>
+          <Text style={styles.mainActionTitle}>New Project</Text>
+          <Text style={styles.mainActionSub}>Start creating magic</Text>
+        </TouchableOpacity>
 
+        {/* Quick Actions Grid */}
         <View style={styles.grid}>
-          <TouchableOpacity style={styles.card} onPress={() => showFeature('Auto Cut')}>
-            <Text style={styles.cardIcon}>✂️</Text>
-            <Text style={styles.cardText}>Auto Cut</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.card} onPress={() => showFeature('Templates')}>
-            <Text style={styles.cardIcon}>🎬</Text>
-            <Text style={styles.cardText}>Templates</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.card} onPress={() => showFeature('Background')}>
-            <Text style={styles.cardIcon}>🖼️</Text>
-            <Text style={styles.cardText}>BG Remove</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.card} onPress={() => showFeature('Filters')}>
-            <Text style={styles.cardIcon}>✨</Text>
-            <Text style={styles.cardText}>Filters</Text>
-          </TouchableOpacity>
+          <FeatureCard icon="auto-fix" title="Auto Cut" color="#ff4d4d" />
+          <FeatureCard icon="layers-outline" title="Templates" color="#4da6ff" />
+          <FeatureCard icon="image-remove-background" title="BG Remove" color="#ffcc00" />
+          <FeatureCard icon="filter-variant" title="Filters" color="#00df9a" />
         </View>
       </ScrollView>
 
-      <View style={styles.nav}>
-        <Text style={styles.navItem}>Edit</Text>
-        <Text style={styles.navItem}>Template</Text>
-        <Text style={styles.navItem}>Inbox</Text>
-        <Text style={styles.navItem}>Me</Text>
+      {/* Bottom Navigation (Mockup) */}
+      <View style={styles.bottomNav}>
+        <MaterialCommunityIcons name="movie-edit" size={24} color="#00df9a" />
+        <MaterialCommunityIcons name="Animation" size={24} color="#777" />
+        <MaterialCommunityIcons name="bell-outline" size={24} color="#777" />
+        <MaterialCommunityIcons name="account-outline" size={24} color="#777" />
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, marginTop: 30 },
-  logo: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
-  proButton: { backgroundColor: '#FFD700', padding: 8, borderRadius: 5 },
-  proText: { fontWeight: 'bold', fontSize: 12 },
-  content: { flex: 1 },
-  banner: { height: 200, backgroundColor: '#1a1a1a', margin: 15, borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
-  bannerTitle: { color: '#fff', fontSize: 18, marginBottom: 15 },
-  startButton: { backgroundColor: '#fff', paddingHorizontal: 30, paddingVertical: 12, borderRadius: 25 },
-  buttonText: { fontWeight: 'bold' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', padding: 10, justifyContent: 'space-around' },
-  card: { width: '45%', backgroundColor: '#1a1a1a', padding: 20, marginVertical: 10, borderRadius: 12, alignItems: 'center' },
-  cardIcon: { fontSize: 30, marginBottom: 10 },
-  cardText: { color: '#fff', fontSize: 14 },
-  nav: { flexDirection: 'row', justifyContent: 'space-around', padding: 15, borderTopWidth: 0.5, borderColor: '#333' },
-  navItem: { color: '#fff' }
+  container: {
+    flex: 1,
+    backgroundColor: '#0f0f0f',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  logoText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    letterSpacing: 1,
+  },
+  proBadge: {
+    backgroundColor: '#00df9a',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  proText: {
+    color: '#000',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  scrollContent: {
+    padding: 20,
+  },
+  mainAction: {
+    backgroundColor: '#1e1e1e',
+    borderRadius: 20,
+    padding: 40,
+    alignItems: 'center',
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  plusIconBg: {
+    backgroundColor: '#00df9a',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  mainActionTitle: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  mainActionSub: {
+    color: '#777',
+    fontSize: 14,
+    marginTop: 5,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  card: {
+    backgroundColor: '#1e1e1e',
+    width: '48%',
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#222',
+  },
+  cardText: {
+    color: '#fff',
+    marginTop: 10,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#222',
+    backgroundColor: '#0f0f0f',
+  },
 });
-  
+        
