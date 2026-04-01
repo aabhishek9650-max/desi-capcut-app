@@ -4,10 +4,12 @@
     "slug": "desi-capcut",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
+    "icon": "./icon.png",
+    "userInterfaceStyle": "dark",
     "splash": {
+      "image": "./icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0f0f0f"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -16,13 +18,18 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.abhishek.desicapcut",
-      "backgroundColor": "#ffffff"
+      "adaptiveIcon": {
+        "foregroundImage": "./icon.png",
+        "backgroundColor": "#0f0f0f"
+      },
+      "package": "com.desicapcut.app",
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
-    "extra": {
-      "eas": {
-        "projectId": "e338c227-0ff0-490e-bf78-5811b43b9776"
-      }
+    "web": {
+      "favicon": "./icon.png"
     }
   }
 }
