@@ -7,11 +7,6 @@
     "icon": "./icon.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0f0f0f"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.desicapcut.app"
@@ -29,9 +24,7 @@
       ]
     },
     "plugins": [
-      "expo-image-picker",
-      "expo-video-thumbnails",
-      "expo-av"
+      "expo-image-picker"
     ],
     "extra": {
       "eas": {
