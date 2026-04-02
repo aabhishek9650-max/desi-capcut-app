@@ -6,15 +6,12 @@
     "orientation": "portrait",
     "icon": "./icon.png",
     "userInterfaceStyle": "dark",
-    "sdkVersion": "50.0.0",
+    "newArchEnabled": true,
     "splash": {
       "image": "./icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0f0f0f"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.desicapcut.app"
@@ -31,6 +28,11 @@
         "android.permission.RECORD_AUDIO"
       ]
     },
+    "plugins": [
+      "expo-image-picker",
+      "expo-video-thumbnails",
+      "expo-av"
+    ],
     "extra": {
       "eas": {
         "projectId": "e338c227-0ff0-490e-bf78-5811b43b9776"
