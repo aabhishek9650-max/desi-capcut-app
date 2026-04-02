@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // ✅ 'import' fixed (lowercase)
 import { 
   StyleSheet, Text, View, Pressable, ScrollView, 
   StatusBar, Dimensions, Image, ActivityIndicator, Alert 
@@ -16,7 +16,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('edit');
 
   const pickVideos = async () => {
-    // ✅ Max Limit Control
     if (selectedMedia.length >= 10) {
       Alert.alert("Limit Reached", "Bhai, 10 videos kaafi hain!");
       return;
@@ -29,25 +28,23 @@ export default function App() {
     });
 
     if (!result.canceled) {
-      setLoading(true); // ✅ Loading Flicker Fix
+      setLoading(true); 
       try {
         const mediaWithThumbs = await Promise.all(
           result.assets.map(async (asset) => {
             try {
-              // ✅ Random Thumbnail Time for better visuals
-              const randomTime = Math.floor(Math.random() * 3000);
+              const randomTime = Math.floor(Math.random() * 3000); // ✅ Random Thumbnail
               const { uri } = await VideoThumbnails.getThumbnailAsync(asset.uri, {
                 time: randomTime,
               });
               return { videoUri: asset.uri, thumbUri: uri };
             } catch (e) {
-              return { videoUri: asset.uri, thumbUri: null }; // ✅ Null case handled
+              return { videoUri: asset.uri, thumbUri: null };
             }
           })
         );
 
         setSelectedMedia(prevMedia => {
-          // ✅ Duplicate Check
           const uniqueNewMedia = mediaWithThumbs.filter(
             newV => !prevMedia.some(oldV => oldV.videoUri === newV.videoUri)
           );
@@ -60,10 +57,10 @@ export default function App() {
   };
 
   const removeVideo = (uri, e) => {
-    e.stopPropagation(); // ✅ Propagation Bug Fix
+    e.stopPropagation(); // ✅ Propagation Fix
     Alert.alert(
       "Remove Video?", 
-      "Kya aap is video ko hatana chahte hain?", // ✅ Delete Confirmation
+      "Kya aap is video ko hatana chahte hain?",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Remove", onPress: () => setSelectedMedia(selectedMedia.filter(v => v.videoUri !== uri)), style: "destructive" }
@@ -87,7 +84,6 @@ export default function App() {
         {activeTab === 'edit' ? (
           <View style={{width: '100%', alignItems: 'center'}}>
             
-            {/* New Project / Create Magic Button */}
             {selectedMedia.length === 0 ? (
               <Pressable 
                 onPress={pickVideos} 
@@ -99,7 +95,7 @@ export default function App() {
                     {loading ? (
                       <View style={{alignItems: 'center'}}>
                         <ActivityIndicator color="#00FFE0" size="large" />
-                        <Text style={{color: '#00FFE0', marginTop: 10, fontSize: 12}}>Processing videos...</Text> 
+                        <Text style={{color: '#00FFE0', marginTop: 10, fontSize: 12}}>Processing videos...</Text> // ✅ Loading Text
                       </View>
                     ) : (
                       <>
@@ -120,12 +116,8 @@ export default function App() {
                       { transform: [{ scale: pressed ? 0.98 : 1 }] }
                     ]}
                   >
-                    <Image 
-                      source={{ uri: item.thumbUri || item.videoUri }} // ✅ Thumbnail fix
-                      style={styles.thumbnail} 
-                    />
+                    <Image source={{ uri: item.thumbUri || item.videoUri }} style={styles.thumbnail} />
                     <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.cardOverlay} />
-                    
                     <Pressable style={styles.deleteBtn} onPress={(e) => removeVideo(item.videoUri, e)}>
                       <Ionicons name="close-circle" size={26} color="white" />
                     </Pressable>
@@ -143,13 +135,16 @@ export default function App() {
               </View>
             )}
 
-            {/* ✅ Empty State Message */}
             {selectedMedia.length === 0 && !loading && (
-              <Text style={styles.emptyText}>No videos selected. Tap to start magic!</Text>
+              <Text style={styles.emptyText}>No videos selected. Tap to start magic!</Text> // ✅ Empty State
             )}
           </View>
         ) : (
-          <View style={styles.templateSection}><Text style={styles.sectionTitle}>TRENDING</Text></View>
+          /* ✅ Music & Template Section Base */
+          <View style={styles.templateSection}>
+            <Text style={styles.sectionTitle}>TRENDING MUSIC</Text>
+            <Text style={styles.emptyText}>Copyright-free & Extraction features coming soon!</Text>
+          </View>
         )}
       </ScrollView>
 
@@ -178,13 +173,15 @@ const styles = StyleSheet.create({
   innerBox: { flex: 1, backgroundColor: '#000', borderRadius: 19, justifyContent: 'center', alignItems: 'center' },
   newProjectText: { color: 'white', fontWeight: 'bold', fontSize: 16, marginTop: 10 },
   videoGrid: { flexDirection: 'row', flexWrap: 'wrap', padding: 5, justifyContent: 'flex-start' },
-  videoCard: { width: (width/2)-15, height: 220, borderRadius: 12, overflow: 'hidden', margin: 7, backgroundColor: '#111' }, // ✅ margin instead of gap
-  addMoreBtn: { borderStyle: 'dashed', borderWidth: 1, borderColor: '#333', justifyContent: 'center', alignItems: 'center' }, // ✅ borderWidth
+  videoCard: { width: (width/2)-15, height: 220, borderRadius: 12, overflow: 'hidden', margin: 7, backgroundColor: '#111' },
+  addMoreBtn: { borderStyle: 'dashed', borderWidth: 1, borderColor: '#333', justifyContent: 'center', alignItems: 'center' },
   thumbnail: { width: '100%', height: '100%', resizeMode: 'cover' },
   cardOverlay: { position: 'absolute', bottom: 0, width: '100%', height: '40%' },
   deleteBtn: { position: 'absolute', top: 8, right: 8 },
-  emptyText: { color: '#666', marginTop: 30, fontSize: 13 },
+  emptyText: { color: '#666', marginTop: 30, fontSize: 13, textAlign: 'center' },
+  templateSection: { flex: 1, alignItems: 'center', padding: 20 },
+  sectionTitle: { color: 'white', fontSize: 18, fontWeight: 'bold' },
   bottomNav: { position: 'absolute', bottom: 30, alignSelf: 'center', width: '85%', height: 65, backgroundColor: 'rgba(15,15,15,0.95)', borderRadius: 32, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', borderWidth: 1, borderColor: '#222' },
   navBtn: { alignItems: 'center' }
 });
-    
+                  
