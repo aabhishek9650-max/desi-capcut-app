@@ -10,15 +10,15 @@
   },
   "dependencies": {
     "expo": "~50.0.0",
-    "expo-status-bar": "~1.11.1",
+    "expo-status-bar": "*",
     "react": "18.2.0",
     "react-native": "0.73.6",
-    "expo-image-picker": "~14.7.1",
-    "expo-video-thumbnails": "~8.2.1",
-    "expo-linear-gradient": "~12.7.2",
-    "expo-av": "~13.10.5",
-    "@expo/vector-icons": "^14.0.0",
-    "expo-file-system": "~16.0.8"
+    "expo-image-picker": "*",
+    "expo-video-thumbnails": "*",
+    "expo-linear-gradient": "*",
+    "expo-av": "*",
+    "@expo/vector-icons": "*",
+    "expo-file-system": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
