@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./icon.png",
     "userInterfaceStyle": "dark",
+    "sdkVersion": "50.0.0",
     "splash": {
       "image": "./icon.png",
       "resizeMode": "contain",
@@ -15,7 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.desicapcut.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,16 +27,19 @@
       "package": "com.desicapcut.app",
       "permissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
       ]
-    },
-    "web": {
-      "favicon": "./icon.png"
     },
     "extra": {
       "eas": {
         "projectId": "e338c227-0ff0-490e-bf78-5811b43b9776"
       }
-    }
+    },
+    "plugins": [
+      "expo-image-picker",
+      "expo-video-thumbnails",
+      "expo-av"
+    ]
   }
-}
+  }
