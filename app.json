@@ -6,7 +6,11 @@
     "orientation": "portrait",
     "icon": "./icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
+    "splash": {
+      "image": "./icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.desicapcut.app"
@@ -14,7 +18,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./icon.png",
-        "backgroundColor": "#0f0f0f"
+        "backgroundColor": "#000000"
       },
       "package": "com.desicapcut.app",
       "permissions": [
@@ -24,7 +28,8 @@
       ]
     },
     "plugins": [
-      "expo-image-picker"
+      "expo-image-picker",
+      "expo-av"
     ],
     "extra": {
       "eas": {
