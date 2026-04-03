@@ -4,6 +4,7 @@
     "slug": "desi-capcut",
     "version": "1.0.2",
     "sdkVersion": "51.0.0",
+    "owner": "ak9865",
     "orientation": "portrait",
     "icon": "./icon.png",
     "userInterfaceStyle": "dark",
