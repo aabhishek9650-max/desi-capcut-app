@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  View, Text, FlatList, TextInput, TouchableOpacity, 
-  Dimensions, Image, StyleSheet, Alert, Platform,
-  ActivityIndicator // 👈 Ye missing tha, ab add kar diya hai
+  View, 
+  Text, 
+  FlatList, 
+  TouchableOpacity, 
+  Dimensions, 
+  StyleSheet, 
+  Alert, 
+  Platform, 
+  ActivityIndicator // 👈 FIX: Ye import hona bahut zaroori hai
 } from 'react-native';
 import { Video, Audio } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
@@ -12,101 +18,99 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
-// 🔑 APNI ASLI PIXABAY KEY YAHAN DALO
-const PIXABAY_KEY = 'YOUR_PIXABAY_KEY'; 
+// 🔑 Apni Pixabay Key yahan dalo (Bina space ke)
+const PIXABAY_KEY = '47209701-f187a536979203e87834bc677'; 
 
 export default function App() {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userMedia, setUserMedia] = useState(null);
-  const [sound, setSound] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [sound, setSound] = useState(null);
   const [error, setError] = useState(false);
 
   const lastPlayed = useRef(null);
 
-  // 🎵 Audio Control
+  // 🎵 Audio Function (Fixed Ducking)
   async function playSound(audioUrl) {
     try {
       if (sound) await sound.unloadAsync();
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
+      await Audio.setAudioModeAsync({ 
+        shouldDuckAndroid: true, 
         playsInSilentModeIOS: true,
-        shouldDuckAndroid: true,
-        staysActiveInBackground: false,
+        staysActiveInBackground: false
       });
       const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: audioUrl },
-        { shouldPlay: true, isLooping: true, volume: 0.8 }
+        { uri: audioUrl }, 
+        { shouldPlay: true, isLooping: true, volume: 1.0 }
       );
       setSound(newSound);
     } catch (e) { console.log("Audio Error"); }
   }
 
-  // 🎬 Fetch Logic
-  const fetchTemplates = async (query = 'trending') => {
+  // 🎬 Data Fetch Function
+  const loadData = async () => {
     setLoading(true);
     setError(false);
     try {
-      const vRes = await fetch(`https://pixabay.com/api/videos/?key=${PIXABAY_KEY}&q=${query}&per_page=15`);
+      const vRes = await fetch(`https://pixabay.com/api/videos/?key=${PIXABAY_KEY}&q=trending&per_page=15`);
       const mRes = await fetch(`https://pixabay.com/api/music/?key=${PIXABAY_KEY}&q=reels`);
       const vData = await vRes.json();
       const mData = await mRes.json();
 
       if (!vData.hits || vData.hits.length === 0) throw new Error("No data");
 
-      const combined = vData.hits.map((v, index) => ({
+      const combined = vData.hits.map((v, i) => ({
         ...v,
-        audio: mData.hits?.length > 0 ? mData.hits[index % mData.hits.length]?.path : null
+        audio: mData.hits && mData.hits.length > 0 ? mData.hits[i % mData.hits.length].path : null
       }));
       setTemplates(combined);
-    } catch (e) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
+    } catch (e) { 
+        setError(true);
+    } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchTemplates(); }, []);
+  useEffect(() => { loadData(); }, []);
 
-  // 🔵 Blue Button Click (Use Template)
-  const handleUseTemplate = async () => {
-    if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All, // Photo & Video dono chalenge
-      allowsEditing: true,
+  // 🔵 Blue Button Function
+  const handleUse = async () => {
+    if (Platform.OS !== 'web') {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+    
+    let res = await ImagePicker.launchImageLibraryAsync({ 
+      mediaTypes: ImagePicker.MediaTypeOptions.All, 
+      allowsEditing: true, 
       aspect: [9, 16],
-      quality: 1,
+      quality: 1
     });
 
-    if (!result.canceled) {
-      setUserMedia(result.assets[0].uri);
-      Alert.alert("AI Magic ✨", "Aapki media template ke saath sync ho rahi hai!");
+    if (!res.canceled) {
+      Alert.alert("AI Magic ✨", "Applying Template Styles to your media!");
     }
   };
 
   const renderItem = ({ item, index }) => (
-    <View style={styles.videoCard}>
-      {/* 🏎️ Skeleton Loader */}
-      <View style={styles.skeletonContainer}>
-         <ActivityIndicator size="large" color="#007AFF" />
+    <View style={styles.card}>
+      {/* Background Loader */}
+      <View style={styles.loaderBg}>
+        <ActivityIndicator size="large" color="#007AFF" />
       </View>
 
       <Video
         source={{ uri: item.videos.medium.url }}
-        style={styles.fullVideo}
+        style={styles.full}
         resizeMode="cover"
         isLooping
         shouldPlay={currentIndex === index}
       />
-
-      <View style={styles.videoOverlay}>
-        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.grad}>
-          <Text style={styles.templateName}>🔥 {item.tags.split(',')[0].toUpperCase()}</Text>
-          <View style={styles.musicRow}>
-            <MaterialCommunityIcons name="music-note" size={16} color="#fff" />
-            <Text style={styles.musicTitle}>Original Sound - AI Mix</Text>
-          </View>
+      
+      <View style={styles.overlay}>
+        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.7)']} style={styles.grad}>
+            <Text style={styles.tag}>🔥 AI TEMPLATE #{index + 1}</Text>
+            <View style={styles.musicInfo}>
+                <MaterialCommunityIcons name="music" size={16} color="#fff" />
+                <Text style={styles.musicText}>Original Audio - Desi Capcut</Text>
+            </View>
         </LinearGradient>
       </View>
     </View>
@@ -114,19 +118,17 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {error && (
-        <View style={styles.errorCenter}>
-          <Text style={{color: '#fff', marginBottom: 10}}>Internet check karo bhai! ❌</Text>
-          <TouchableOpacity onPress={() => fetchTemplates()} style={styles.retryBtn}>
+      {error ? (
+        <View style={styles.center}>
+          <Text style={{color: '#fff', marginBottom: 20}}>Internet or API Key Issue! ❌</Text>
+          <TouchableOpacity onPress={loadData} style={styles.retryBtn}>
             <Text style={{color: '#fff', fontWeight: 'bold'}}>RETRY</Text>
           </TouchableOpacity>
         </View>
-      )}
-
-      {loading ? (
-        <View style={styles.errorCenter}>
+      ) : loading ? (
+        <View style={styles.center}>
           <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={{color: '#fff', marginTop: 10}}>Loading Templates...</Text>
+          <Text style={{color: '#fff', marginTop: 10}}>Fetching Magic... ✨</Text>
         </View>
       ) : (
         <FlatList
@@ -151,12 +153,12 @@ export default function App() {
         />
       )}
 
-      {/* 🔵 THE FINAL BLUE BUTTON */}
+      {/* 🔵 FINAL BLUE BUTTON */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.blueButton} onPress={handleUseTemplate}>
-          <LinearGradient colors={['#007AFF', '#0047FF']} style={styles.gradient}>
-             <MaterialCommunityIcons name="lightning-bolt" size={24} color="#fff" />
-             <Text style={styles.btnText}>USE TEMPLATE</Text>
+        <TouchableOpacity style={styles.blueBtn} onPress={handleUse}>
+          <LinearGradient colors={['#007AFF', '#0047FF']} style={styles.btnGrad}>
+            <MaterialCommunityIcons name="lightning-bolt" size={26} color="#fff" />
+            <Text style={styles.btnText}>USE TEMPLATE</Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -166,18 +168,19 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
-  videoCard: { width: width, height: height },
-  fullVideo: { ...StyleSheet.absoluteFillObject },
-  skeletonContainer: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: '#111', zIndex: -1 },
-  videoOverlay: { position: 'absolute', bottom: 120, width: '100%', padding: 20 },
-  grad: { padding: 20, borderRadius: 10 },
-  templateName: { color: '#fff', fontSize: 22, fontWeight: '900', textShadowColor: '#000', textShadowRadius: 5 },
-  musicRow: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
-  musicTitle: { color: '#ccc', marginLeft: 8, fontSize: 13 },
+  card: { width: width, height: height },
+  full: { ...StyleSheet.absoluteFillObject },
+  loaderBg: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: '#111', zIndex: -1 },
+  overlay: { position: 'absolute', bottom: 130, width: '100%', paddingHorizontal: 20 },
+  grad: { padding: 15, borderRadius: 10 },
+  tag: { color: '#fff', fontWeight: 'bold', fontSize: 20 },
+  musicInfo: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
+  musicText: { color: '#ccc', marginLeft: 6, fontSize: 13 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  retryBtn: { padding: 15, backgroundColor: '#007AFF', borderRadius: 30, width: 150, alignItems: 'center' },
   footer: { position: 'absolute', bottom: 40, width: '100%', alignItems: 'center' },
-  blueButton: { width: '85%', height: 65, borderRadius: 35, overflow: 'hidden', elevation: 15 },
-  gradient: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-  btnText: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginLeft: 10, letterSpacing: 1 },
-  errorCenter: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  retryBtn: { paddingVertical: 10, paddingHorizontal: 30, backgroundColor: '#007AFF', borderRadius: 25 }
+  blueBtn: { width: '85%', height: 65, borderRadius: 35, overflow: 'hidden', elevation: 10 },
+  btnGrad: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+  btnText: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginLeft: 10, letterSpacing: 1 }
 });
+          
