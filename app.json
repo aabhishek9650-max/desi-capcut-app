@@ -2,20 +2,21 @@
   "expo": {
     "name": "Desi Capcut",
     "slug": "desi-capcut",
-    "version": "1.0.0",
+    "version": "1.0.2",
+    "sdkVersion": "51.0.0",
     "orientation": "portrait",
     "icon": "./icon.png",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#000000",
     "android": {
+      "package": "com.desicapcut.app",
       "adaptiveIcon": {
         "foregroundImage": "./icon.png",
         "backgroundColor": "#000000"
-      },
-      "package": "com.desicapcut.app"
+      }
     },
     "plugins": [
-      "expo-av"
+      "expo-av",
+      "expo-image-picker"
     ],
     "extra": {
       "eas": {
