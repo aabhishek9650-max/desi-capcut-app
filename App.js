@@ -1,38 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, FlatList, Dimensions, ActivityIndicator, TextInput } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Video } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
-const API_KEY = 'YOUR_PIXABAY_API_KEY'; // <-- Apni Key Yahan Zaroor Daalein
+
+// ✅ TERI ASLI KEY YAHAN FIT KAR DI HAI
+const API_KEY = '53126233-c5f7989653068455566493ac1'; 
 
 export default function App() {
   const [video, setVideo] = useState(null);
   const [activeTab, setActiveTab] = useState('edit');
-  const [templates, setTemplates] = useState([]);
+  const [dataList, setDataList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. Templates Fetch karne ka Logic
-  const fetchTemplates = async () => {
+  // 1. Templates ya Music Fetch karne ka function
+  const fetchData = async (type = 'videos', query = 'nature') => {
     setLoading(true);
     try {
-      const response = await fetch(`https://pixabay.com/api/videos/?key=${API_KEY}&q=nature+background&per_page=10`);
+      const endpoint = type === 'videos' ? 'videos' : 'videos'; // Pixabay music/audio access specific hota hai, abhi hum templates fetch kar rahe hain
+      const response = await fetch(`https://pixabay.com/api/${endpoint}/?key=${API_KEY}&q=${query}&per_page=15`);
       const data = await response.json();
-      setTemplates(data.hits);
+      setDataList(data.hits);
     } catch (error) {
-      console.error("Template Error:", error);
+      console.error("Fetch Error:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (activeTab === 'templates') fetchTemplates();
+    if (activeTab === 'templates') fetchData('videos', 'trending');
+    if (activeTab === 'music') fetchData('videos', 'lofi'); 
   }, [activeTab]);
 
-  // 2. Video Picker Logic
   const pickVideo = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
@@ -54,38 +58,28 @@ export default function App() {
             {video ? (
               <View style={styles.videoWrapper}>
                 <Video source={{ uri: video }} style={styles.fullVideo} useNativeControls resizeMode="contain" isLooping shouldPlay />
-                <View style={styles.toolGrid}>
-                   <TouchableOpacity style={styles.toolBtn}><MaterialCommunityIcons name="content-cut" size={24} color="#fff" /><Text style={styles.toolText}>Trim</Text></TouchableOpacity>
-                   <TouchableOpacity style={styles.toolBtn}><MaterialCommunityIcons name="music" size={24} color="#fff" /><Text style={styles.toolText}>Music</Text></TouchableOpacity>
-                   <TouchableOpacity style={styles.toolBtn}><MaterialCommunityIcons name="auto-fix" size={24} color="#fff" /><Text style={styles.toolText}>Filter</Text></TouchableOpacity>
-                </View>
-                <TouchableOpacity style={styles.resetBtn} onPress={() => setVideo(null)}><Text style={styles.resetBtnText}>Discard Project</Text></TouchableOpacity>
+                <TouchableOpacity style={styles.resetBtn} onPress={() => setVideo(null)}><Text style={styles.resetBtnText}>New Project</Text></TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity style={styles.uploadCard} onPress={pickVideo}>
                 <MaterialCommunityIcons name="video-plus" size={60} color="#E91E63" />
-                <Text style={styles.cardTitle}>New Project</Text>
-                <Text style={styles.cardSub}>Import video to start editing</Text>
+                <Text style={styles.cardTitle}>Start Creating</Text>
               </TouchableOpacity>
             )}
           </ScrollView>
         ) : (
-          <View style={styles.templateContainer}>
-            <Text style={styles.sectionTitle}>Trending Templates</Text>
+          <View style={styles.listContainer}>
+            <Text style={styles.sectionTitle}>{activeTab === 'templates' ? 'Video Templates' : 'Background Music'}</Text>
             {loading ? (
-              <ActivityIndicator size="large" color="#E91E63" style={{marginTop: 50}} />
+              <ActivityIndicator size="large" color="#E91E63" />
             ) : (
               <FlatList
-                data={templates}
+                data={dataList}
                 numColumns={2}
-                keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.tempItem} onPress={() => setVideo(item.videos.medium.url)}>
-                    <Image source={{ uri: `https://i.vimeocdn.com/video/${item.picture_id}_295x166.jpg` }} style={styles.tempImage} />
-                    <View style={styles.tempOverlay}>
-                      <MaterialCommunityIcons name="lightning-bolt" size={16} color="#FFD700" />
-                      <Text style={styles.tempText}>Apply</Text>
-                    </View>
+                  <TouchableOpacity style={styles.itemCard} onPress={() => setVideo(item.videos.medium.url)}>
+                    <Image source={{ uri: `https://i.vimeocdn.com/video/${item.picture_id}_295x166.jpg` }} style={styles.itemImg} />
+                    <Text style={styles.itemLabel}>Apply</Text>
                   </TouchableOpacity>
                 )}
               />
@@ -94,15 +88,19 @@ export default function App() {
         )}
       </View>
 
-      {/* Bottom Navigation */}
+      {/* Modern Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navTab} onPress={() => setActiveTab('edit')}>
-          <MaterialCommunityIcons name="movie-edit" size={28} color={activeTab === 'edit' ? '#E91E63' : '#888'} />
+          <MaterialCommunityIcons name="movie-edit" size={26} color={activeTab === 'edit' ? '#E91E63' : '#888'} />
           <Text style={[styles.navText, {color: activeTab === 'edit' ? '#E91E63' : '#888'}]}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navTab} onPress={() => setActiveTab('templates')}>
-          <MaterialCommunityIcons name="fire" size={28} color={activeTab === 'templates' ? '#E91E63' : '#888'} />
+          <MaterialCommunityIcons name="fire" size={26} color={activeTab === 'templates' ? '#E91E63' : '#888'} />
           <Text style={[styles.navText, {color: activeTab === 'templates' ? '#E91E63' : '#888'}]}>Templates</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navTab} onPress={() => setActiveTab('music')}>
+          <MaterialCommunityIcons name="music-note" size={26} color={activeTab === 'music' ? '#E91E63' : '#888'} />
+          <Text style={[styles.navText, {color: activeTab === 'music' ? '#E91E63' : '#888'}]}>Music</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -112,26 +110,21 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
   header: { paddingTop: 50, paddingBottom: 15, alignItems: 'center' },
-  logoText: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
+  logoText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
   scrollContainer: { padding: 20, alignItems: 'center' },
-  uploadCard: { width: '100%', height: 250, backgroundColor: '#121212', borderRadius: 20, justifyContent: 'center', alignItems: 'center', borderStyle: 'dashed', borderWidth: 1, borderColor: '#333' },
-  cardTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginTop: 10 },
-  cardSub: { color: '#666', fontSize: 12 },
+  uploadCard: { width: '100%', height: 250, backgroundColor: '#121212', borderRadius: 20, justifyContent: 'center', alignItems: 'center', borderStyle: 'dashed', borderWidth: 1, borderColor: '#444' },
+  cardTitle: { color: '#fff', marginTop: 10 },
   videoWrapper: { width: '100%', alignItems: 'center' },
-  fullVideo: { width: width - 40, height: 350, borderRadius: 15 },
-  toolGrid: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginTop: 20, backgroundColor: '#1a1a1a', padding: 15, borderRadius: 15 },
-  toolBtn: { alignItems: 'center' },
-  toolText: { color: '#fff', fontSize: 10, marginTop: 5 },
+  fullVideo: { width: width - 40, height: 400, borderRadius: 15 },
   resetBtn: { marginTop: 20, padding: 10 },
-  resetBtnText: { color: '#E91E63', fontWeight: 'bold' },
-  templateContainer: { flex: 1, padding: 10 },
-  sectionTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginBottom: 15, marginLeft: 5 },
-  tempItem: { flex: 1, margin: 5, height: 200, borderRadius: 10, overflow: 'hidden', backgroundColor: '#111' },
-  tempImage: { width: '100%', height: '100%' },
-  tempOverlay: { position: 'absolute', bottom: 10, left: 10, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.6)', padding: 5, borderRadius: 5 },
-  tempText: { color: '#fff', fontSize: 10, marginLeft: 3 },
-  bottomNav: { flexDirection: 'row', backgroundColor: '#121212', height: 70, borderTopWidth: 1, borderTopColor: '#222' },
+  resetBtnText: { color: '#E91E63' },
+  listContainer: { flex: 1, padding: 10 },
+  sectionTitle: { color: '#fff', fontSize: 18, marginBottom: 15 },
+  itemCard: { flex: 1, margin: 5, height: 150, borderRadius: 10, overflow: 'hidden', backgroundColor: '#111' },
+  itemImg: { width: '100%', height: '100%' },
+  itemLabel: { position: 'absolute', bottom: 5, right: 5, color: '#fff', backgroundColor: '#E91E63', padding: 3, fontSize: 10, borderRadius: 4 },
+  bottomNav: { flexDirection: 'row', backgroundColor: '#121212', height: 75, borderTopWidth: 1, borderTopColor: '#222' },
   navTab: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   navText: { fontSize: 10, marginTop: 4 }
 });
-          
+                                                                              
