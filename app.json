@@ -4,19 +4,18 @@
     "slug": "desi-capcut",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#000000",
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./icon.png",
         "backgroundColor": "#000000"
       },
       "package": "com.desicapcut.app"
     },
     "plugins": [
-      "expo-av",
-      "expo-image-picker"
+      "expo-av"
     ],
     "extra": {
       "eas": {
