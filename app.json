@@ -29,6 +29,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.RECORD_AUDIO",
         "android.permission.CAMERA",
+        "android.permission.VIBRATE",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
@@ -36,11 +37,12 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Desi Capcut to access your photos",
+          "photosPermission": "Allow Desi Capcut to access your photos/videos",
           "cameraPermission": "Allow Desi Capcut to access your camera"
         }
       ],
-      "expo-av"
+      "expo-av",
+      "expo-haptics"
     ],
     "extra": {
       "eas": {
