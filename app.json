@@ -4,6 +4,18 @@
     "slug": "desi-capcut",
     "version": "1.0.2",
     "sdkVersion": "51.0.0",
+    "orientation": "portrait",
+    "icon": "./icon.png",
+    "userInterfaceStyle": "dark",
+
+    "cli": {
+      "appVersionSource": "remote"
+    },
+
+    "splash": {
+      "backgroundColor": "#000000"
+    },
+
     "android": {
       "package": "com.desicapcut.app",
       "adaptiveIcon": {
@@ -11,15 +23,16 @@
         "backgroundColor": "#000000"
       }
     },
-    "splash": {
-      "image": "./icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
-    },
+
     "plugins": [
       "expo-av",
       "expo-image-picker"
-    ]
-    // ... baki sab same rehne dein
+    ],
+
+    "extra": {
+      "eas": {
+        "projectId": "e338c227-0ff0-490e-bf78-5811b43b9776"
+      }
+    }
   }
 }
