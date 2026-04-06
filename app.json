@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "Desi Capcut",
-    "slug": "desi-capcut",
+    "name": "Crystel Pro",
+    "slug": "crystel-pro",
     "version": "1.0.2",
+    "owner": "ak8956",
     "sdkVersion": "51.0.0",
     "android": {
-      "package": "com.desicapcut.app",
+      "package": "com.crystelpro.app",
       "adaptiveIcon": {
         "foregroundImage": "./icon.png",
         "backgroundColor": "#000000"
@@ -22,7 +23,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "e338c227-0ff0-490e-bf78-5811b43b9776"
+        "projectId": "0db87998-d369-4bb6-96b6-c67fc89f15f8"
       }
     }
   }
