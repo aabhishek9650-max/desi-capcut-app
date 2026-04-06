@@ -1,101 +1,123 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, StatusBar } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState('Home');
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* 🔝 Header */}
+      {/* Header Section */}
       <View style={styles.header}>
-        <Text style={styles.logoText}>Desi <Text style={{color: '#007AFF'}}>Capcut</Text></Text>
-        <TouchableOpacity style={styles.iconBtn}>
-          <MaterialCommunityIcons name="cog-outline" size={28} color="#fff" />
+        <View>
+          <Text style={styles.brandName}>CRYSTEL PRO</Text>
+          <Text style={styles.subTag}>Ak Development Tech</Text>
+        </View>
+        <TouchableOpacity style={styles.profileBtn}>
+          <Feather name="user" size={24} color="#00E5FF" />
         </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* 🚀 New Project Hero Section */}
-        <TouchableOpacity activeOpacity={0.8} style={styles.heroCard}>
-          <LinearGradient colors={['#1e1e1e', '#121212']} style={styles.heroGrad}>
-            <View style={styles.plusCircle}>
-              <MaterialCommunityIcons name="plus" size={40} color="#fff" />
-            </View>
-            <Text style={styles.heroTitle}>New Project</Text>
-            <Text style={styles.heroSub}>Start creating magic</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        {/* 🛠️ Quick Tools Grid */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Quick Tools</Text>
-        </View>
         
-        <View style={styles.toolsGrid}>
-          {[
-            {name: 'Auto Cut', icon: 'movie-filter', color: '#FF3B30'},
-            {name: 'Remove BG', icon: 'human-edit', color: '#34C759'},
-            {name: 'AI Effects', icon: 'auto-fix', color: '#AF52DE'},
-            {name: 'Caption', icon: 'closed-caption', color: '#5856D6'}
-          ].map((tool, i) => (
-            <TouchableOpacity key={i} style={styles.toolItem}>
-              <View style={[styles.toolIcon, {backgroundColor: tool.color + '20'}]}>
-                <MaterialCommunityIcons name={tool.icon} size={24} color={tool.color} />
-              </View>
-              <Text style={styles.toolLabel}>{tool.name}</Text>
+        {/* Hero Banner: Future Star Creator Spot */}
+        <View style={styles.heroCard}>
+          <Image 
+            source={{ uri: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500' }} 
+            style={styles.heroImage} 
+          />
+          <View style={styles.heroOverlay}>
+            <Text style={styles.heroTitle}>Become a Star Creator</Text>
+            <Text style={styles.heroSubtitle}>Reach 5M Followers & Earn ₹30,000/Month</Text>
+            <TouchableOpacity style={styles.joinBtn}>
+              <Text style={styles.joinText}>Learn More</Text>
             </TouchableOpacity>
-          ))}
+          </View>
         </View>
 
-        {/* 🎬 Recent Projects Placeholder */}
-        <View style={styles.emptyState}>
-          <MaterialCommunityIcons name="folder-open-outline" size={50} color="#333" />
-          <Text style={styles.emptyText}>Your masterpieces will appear here</Text>
+        {/* Action Buttons */}
+        <View style={styles.actionRow}>
+          <TouchableOpacity style={styles.actionCard}>
+            <MaterialCommunityIcons name="video-plus" size={32} color="#fff" />
+            <Text style={styles.actionLabel}>New Project</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.actionCard, { backgroundColor: '#1A1A1A', borderWidth: 1, borderColor: '#00E5FF' }]}>
+            <MaterialCommunityIcons name="auto-fix" size={32} color="#00E5FF" />
+            <Text style={[styles.actionLabel, { color: '#00E5FF' }]}>AI Magic</Text>
+          </TouchableOpacity>
         </View>
+
+        {/* Trending Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Trending Templates</Text>
+          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.templateScroll}>
+          {[1, 2, 3].map((item) => (
+            <View key={item} style={styles.templateCard}>
+              <View style={styles.placeholderImg}>
+                <Feather name="play-circle" size={40} color="rgba(255,255,255,0.5)" />
+              </View>
+              <Text style={styles.templateName}>Vibe Check #{item}</Text>
+              <View style={styles.creatorInfo}>
+                <View style={styles.verifiedCircle} />
+                <Text style={styles.creatorName}>Star_Editor_0{item}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+
       </ScrollView>
 
-      {/* ⚓ Bottom Navigation */}
+      {/* Bottom Navigation Bar */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="movie-edit" size={26} color="#007AFF" />
-          <Text style={[styles.navText, {color: '#007AFF'}]}>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="layers-outline" size={26} color="#666" />
-          <Text style={styles.navText}>Templates</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="account-outline" size={26} color="#666" />
-          <Text style={styles.navText}>Me</Text>
-        </TouchableOpacity>
+        {['Home', 'Templates', 'Me'].map((tab) => (
+          <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.navItem}>
+            <Feather 
+              name={tab === 'Home' ? 'home' : tab === 'Templates' ? 'layers' : 'user'} 
+              size={24} 
+              color={activeTab === tab ? '#00E5FF' : '#888'} 
+            />
+            <Text style={[styles.navText, { color: activeTab === tab ? '#00E5FF' : '#888' }]}>{tab}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', paddingTop: 50 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 20 },
-  logoText: { color: '#fff', fontSize: 24, fontWeight: '900', letterSpacing: -1 },
-  heroCard: { width: width - 40, alignSelf: 'center', height: 200, borderRadius: 20, overflow: 'hidden', borderWeight: 1, borderColor: '#333' },
-  heroGrad: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  plusCircle: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#007AFF', justifyContent: 'center', alignItems: 'center', marginBottom: 15, elevation: 10 },
-  heroTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
-  heroSub: { color: '#666', fontSize: 14, marginTop: 5 },
-  sectionHeader: { paddingHorizontal: 20, marginTop: 30, marginBottom: 15 },
-  sectionTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
-  toolsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 15 },
-  toolItem: { width: '25%', alignItems: 'center', marginBottom: 20 },
-  toolIcon: { width: 55, height: 55, borderRadius: 15, justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
-  toolLabel: { color: '#999', fontSize: 12 },
-  emptyState: { marginTop: 40, alignItems: 'center', paddingBottom: 100 },
-  emptyText: { color: '#333', fontSize: 14, marginTop: 10 },
-  bottomNav: { position: 'absolute', bottom: 0, width: '100%', height: 80, backgroundColor: '#111', flexDirection: 'row', borderTopWidth: 0.5, borderTopColor: '#222' },
-  navItem: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  navText: { fontSize: 11, marginTop: 4, fontWeight: '500' }
+  container: { flex: 1, backgroundColor: '#000' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20 },
+  brandName: { color: '#fff', fontSize: 24, fontWeight: '900', letterSpacing: 2 },
+  subTag: { color: '#00E5FF', fontSize: 10, fontWeight: 'bold' },
+  profileBtn: { backgroundColor: '#1A1A1A', padding: 10, borderRadius: 12 },
+  heroCard: { margin: 20, height: 200, borderRadius: 20, overflow: 'hidden', elevation: 10 },
+  heroImage: { width: '100%', height: '100%', opacity: 0.6 },
+  heroOverlay: { position: 'absolute', bottom: 20, left: 20 },
+  heroTitle: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
+  heroSubtitle: { color: '#ddd', fontSize: 12, marginTop: 5 },
+  joinBtn: { backgroundColor: '#00E5FF', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 8, marginTop: 10, alignSelf: 'flex-start' },
+  joinText: { color: '#000', fontWeight: 'bold', fontSize: 12 },
+  actionRow: { flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 10 },
+  actionCard: { backgroundColor: '#00E5FF', width: '42%', height: 100, borderRadius: 20, justifyContent: 'center', alignItems: 'center', elevation: 5 },
+  actionLabel: { color: '#000', fontWeight: 'bold', marginTop: 8 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, marginTop: 10 },
+  sectionTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  seeAll: { color: '#00E5FF', fontSize: 14 },
+  templateScroll: { paddingLeft: 20 },
+  templateCard: { width: 160, marginRight: 15, marginBottom: 100 },
+  placeholderImg: { width: 160, height: 220, backgroundColor: '#1A1A1A', borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
+  templateName: { color: '#fff', marginTop: 10, fontWeight: '600' },
+  creatorInfo: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
+  verifiedCircle: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#00E5FF', marginRight: 5 },
+  creatorName: { color: '#888', fontSize: 12 },
+  bottomNav: { position: 'absolute', bottom: 0, width: '100%', height: 70, backgroundColor: '#111', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', borderTopWidth: 1, borderTopColor: '#222' },
+  navItem: { alignItems: 'center' },
+  navText: { fontSize: 10, marginTop: 4 }
 });
-    
+            
