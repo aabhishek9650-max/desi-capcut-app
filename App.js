@@ -1,163 +1,142 @@
-import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar, Dimensions, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { Video } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
 
+const { width, height } = Dimensions.get('window');
+
 export default function App() {
+  const [videoUri, setVideoUri] = useState(null);
+
+  const pickVideo = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setVideoUri(result.assets[0].uri);
+    }
+  };
+
+  // --- EDITOR SCREEN (1000x PRO LOOK) ---
+  if (videoUri) {
+    return (
+      <SafeAreaView style={styles.editorContainer}>
+        <StatusBar barStyle="light-content" />
+        <View style={styles.navBar}>
+          <TouchableOpacity onPress={() => setVideoUri(null)}>
+            <Ionicons name="close-outline" size={32} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.proLogo}>CRYSTEL <Text style={{color:'#00E5FF'}}>EDIT</Text></Text>
+          <TouchableOpacity style={styles.exportBtnSmall}>
+            <Text style={styles.exportTextSmall}>EXPORT</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.previewArea}>
+          <Video
+            source={{ uri: videoUri }}
+            style={styles.fullVideo}
+            resizeMode="contain"
+            shouldPlay
+            isLooping
+            useNativeControls={false}
+          />
+        </View>
+
+        <View style={styles.timelineSection}>
+          <View style={styles.timelineTrack}>
+            <LinearGradient colors={['#1C1C1E', '#2C2C2E']} style={styles.trackContent}>
+               <Ionicons name="film-outline" size={20} color="#555" />
+               <Text style={{color:'#555', fontSize:10, marginLeft:10}}>Video Layer 1</Text>
+            </LinearGradient>
+            <View style={styles.playheadLine} />
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.toolBar}>
+            {[
+              {n: 'Trim', i: 'cut-outline'},
+              {n: 'Audio', i: 'musical-note-outline'},
+              {n: 'Text', i: 'text-outline'},
+              {n: 'Filter', i: 'color-filter-outline'},
+              {n: 'Adjust', i: 'options-outline'},
+              {n: 'Speed', i: 'speedometer-outline'}
+            ].map((item, index) => (
+              <TouchableOpacity key={index} style={styles.toolIconBtn}>
+                <Ionicons name={item.i} size={24} color="#fff" />
+                <Text style={styles.toolLabelText}>{item.n}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // --- HOME SCREEN (ULTRA MINIMALIST) ---
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.homeContainer}>
       <StatusBar barStyle="light-content" />
-      
-      {/* Header Section */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.brandTitle}>CRYSTEL PRO</Text>
-          <Text style={styles.brandSubtitle}>Ak Development Tech</Text>
-        </View>
-        <TouchableOpacity style={styles.profileBtn}>
-          <Ionicons name="person-circle-outline" size={35} color="#00E5FF" />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollBody}>
+      <LinearGradient colors={['#000', '#121212', '#000']} style={styles.fullBackground}>
         
-        {/* Main Action Cards */}
-        <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.mainCard}>
-            <LinearGradient colors={['#00E5FF', '#0097A7']} style={styles.cardGradient}>
-              <MaterialCommunityIcons name="video-plus" size={40} color="#fff" />
-              <Text style={styles.cardText}>New Project</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.mainCard}>
-            <LinearGradient colors={['#2C2C2E', '#1C1C1E']} style={styles.cardGradientBorder}>
-              <MaterialCommunityIcons name="auto-fix" size={40} color="#00E5FF" />
-              <Text style={[styles.cardText, {color: '#00E5FF'}]}>AI Magic</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+        <View style={styles.homeHeader}>
+          <Text style={styles.mainTitle}>CRYSTEL <Text style={{color:'#00E5FF'}}>PRO</Text></Text>
+          <Text style={styles.subTagline}>Ak Development Tech</Text>
         </View>
 
-        {/* Quick Tools Section (Instead of Star Badge) */}
-        <Text style={styles.sectionTitle}>Smart Tools</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.toolsRow}>
-          {['Remove BG', 'Auto Cut', 'Filters', 'Retouch'].map((tool, index) => (
-            <TouchableOpacity key={index} style={styles.toolItem}>
-              <View style={styles.toolIconCircle}>
-                <Ionicons name="flash-outline" size={20} color="#00E5FF" />
+        <View style={styles.centerAction}>
+          <TouchableOpacity onPress={pickVideo} activeOpacity={0.8}>
+            <LinearGradient colors={['#00E5FF', '#00838F']} style={styles.heroCard}>
+              <View style={styles.iconCircle}>
+                <Ionicons name="add" size={50} color="#000" />
               </View>
-              <Text style={styles.toolText}>{tool}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Trending Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Trending Templates</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAll}>See All</Text>
+              <Text style={styles.heroBtnText}>New Project</Text>
+              <Text style={styles.heroSubText}>Tap to import from gallery</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.templateGrid}>
-          <View style={styles.templatePlaceholder} />
-          <View style={styles.templatePlaceholder} />
+        <View style={styles.homeFooter}>
+           <TouchableOpacity style={styles.footerIcon}><Ionicons name="home" size={26} color="#00E5FF" /></TouchableOpacity>
+           <TouchableOpacity style={styles.footerIcon}><Ionicons name="person-outline" size={26} color="#8E8E93" /></TouchableOpacity>
         </View>
 
-      </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home" size={24} color="#00E5FF" />
-          <Text style={[styles.navText, {color: '#00E5FF'}]}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="layers-outline" size={24} color="#8E8E93" />
-          <Text style={styles.navText}>Templates</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person-outline" size={24} color="#8E8E93" />
-          <Text style={styles.navText}>Me</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  brandTitle: { fontSize: 26, fontWeight: '900', color: '#fff', letterSpacing: 1 },
-  brandSubtitle: { fontSize: 12, color: '#00E5FF', fontWeight: '600' },
-  scrollBody: { paddingBottom: 100 },
-  actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    marginTop: 10
-  },
-  mainCard: { width: '47%', height: 160, borderRadius: 25, overflow: 'hidden' },
-  cardGradient: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  cardGradientBorder: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    borderWidth: 1, 
-    borderColor: '#3A3A3C' 
-  },
-  cardText: { marginTop: 12, fontSize: 16, fontWeight: 'bold', color: '#fff' },
-  sectionHeader: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    paddingHorizontal: 20, 
-    marginTop: 25 
-  },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff', paddingHorizontal: 20, marginTop: 20 },
-  seeAll: { color: '#00E5FF', fontSize: 14 },
-  toolsRow: { paddingLeft: 20, marginTop: 15 },
-  toolItem: { alignItems: 'center', marginRight: 25 },
-  toolIconCircle: { 
-    width: 50, 
-    height: 50, 
-    borderRadius: 15, 
-    backgroundColor: '#1C1C1E', 
-    justifyContent: 'center', 
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#3A3A3C'
-  },
-  toolText: { color: '#8E8E93', fontSize: 12, marginTop: 8 },
-  templateGrid: { flexDirection: 'row', justifyContent: 'space-between', padding: 20 },
-  templatePlaceholder: { 
-    width: '48%', 
-    height: 250, 
-    backgroundColor: '#1C1C1E', 
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#2C2C2E'
-  },
-  bottomNav: {
-    position: 'absolute',
-    bottom: 0,
-    flexDirection: 'row',
-    width: '100%',
-    height: 80,
-    backgroundColor: 'rgba(28, 28, 30, 0.95)',
-    borderTopWidth: 1,
-    borderTopColor: '#38383A',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingBottom: 20
-  },
-  navItem: { alignItems: 'center' },
-  navText: { fontSize: 10, marginTop: 4, color: '#8E8E93' }
+  // Home Styles
+  homeContainer: { flex: 1, backgroundColor: '#000' },
+  fullBackground: { flex: 1, justifyContent: 'space-between', paddingVertical: 50 },
+  homeHeader: { alignItems: 'center' },
+  mainTitle: { fontSize: 32, fontWeight: '900', color: '#fff', letterSpacing: 2 },
+  subTagline: { color: '#8E8E93', fontSize: 12, marginTop: 5, letterSpacing: 1 },
+  centerAction: { alignItems: 'center', paddingHorizontal: 30 },
+  heroCard: { width: width * 0.8, height: width * 0.9, borderRadius: 40, justifyContent: 'center', alignItems: 'center', elevation: 20, shadowColor: '#00E5FF', shadowOpacity: 0.5, shadowRadius: 20 },
+  iconCircle: { width: 90, height: 90, borderRadius: 45, backgroundColor: 'rgba(255,255,255,0.9)', justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
+  heroBtnText: { fontSize: 28, fontWeight: 'bold', color: '#000' },
+  heroSubText: { color: 'rgba(0,0,0,0.6)', fontSize: 13, marginTop: 5 },
+  homeFooter: { flexDirection: 'row', justifyContent: 'center', gap: 60 },
+
+  // Editor Styles
+  editorContainer: { flex: 1, backgroundColor: '#000' },
+  navBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15, borderBottomWidth: 0.5, borderBottomColor: '#222' },
+  proLogo: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 1 },
+  exportBtnSmall: { backgroundColor: '#00E5FF', paddingHorizontal: 15, paddingVertical: 6, borderRadius: 8 },
+  exportTextSmall: { color: '#000', fontWeight: '900', fontSize: 12 },
+  previewArea: { flex: 1, backgroundColor: '#000', justifyContent: 'center' },
+  fullVideo: { width: '100%', height: '100%' },
+  timelineSection: { height: height * 0.35, backgroundColor: '#121212', borderTopLeftRadius: 30, borderTopRightRadius: 30, padding: 20 },
+  timelineTrack: { height: 80, width: '100%', backgroundColor: '#1C1C1E', borderRadius: 15, marginTop: 10, justifyContent: 'center', overflow: 'hidden' },
+  trackContent: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingLeft: 20 },
+  playheadLine: { position: 'absolute', left: '50%', height: '100%', width: 2, backgroundColor: '#00E5FF', zIndex: 10 },
+  toolBar: { marginTop: 40 },
+  toolIconBtn: { alignItems: 'center', marginRight: 35 },
+  toolLabelText: { color: '#8E8E93', fontSize: 10, marginTop: 8 }
 });
     
