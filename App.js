@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar, Dimensions, ScrollView, Animated } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, StatusBar, Dimensions, ScrollView } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { Video } from 'expo-av';
@@ -10,7 +10,6 @@ const { width, height } = Dimensions.get('window');
 export default function App() {
   const [videoUri, setVideoUri] = useState(null);
   const [isPlaying, setIsPlaying] = useState(true);
-  const videoRef = useRef(null);
 
   const pickVideo = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -28,89 +27,75 @@ export default function App() {
       <SafeAreaView style={styles.editorContainer}>
         <StatusBar barStyle="light-content" />
         
-        {/* Header - Glassmorphism Look */}
+        {/* 1. TOP NAV */}
         <View style={styles.navBar}>
           <TouchableOpacity onPress={() => setVideoUri(null)}>
-            <Ionicons name="chevron-back" size={30} color="#fff" />
+            <Ionicons name="close-outline" size={30} color="#fff" />
           </TouchableOpacity>
-          <View style={styles.headerTitleBox}>
-            <Text style={styles.proLogo}>CRYSTEL <Text style={{color:'#00E5FF'}}>EDIT</Text></Text>
-          </View>
+          <Text style={styles.proLogo}>CRYSTEL <Text style={{color:'#00E5FF'}}>EDIT</Text></Text>
           <TouchableOpacity style={styles.exportBtn}>
             <Text style={styles.exportText}>EXPORT</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Video Preview Section */}
-        <TouchableOpacity 
-          activeOpacity={1} 
-          onPress={() => setIsPlaying(!isPlaying)} 
-          style={styles.previewArea}
-        >
+        {/* 2. VIDEO PREVIEW (Clean) */}
+        <View style={styles.previewArea}>
           <Video
-            ref={videoRef}
             source={{ uri: videoUri }}
             style={styles.fullVideo}
             resizeMode="contain"
             shouldPlay={isPlaying}
             isLooping
           />
-          {!isPlaying && (
-            <View style={styles.playOverlay}>
-              <Ionicons name="play" size={60} color="rgba(0,229,255,0.8)" />
-            </View>
-          )}
-        </TouchableOpacity>
+        </View>
 
-        {/* 10000x Pro Timeline Section */}
-        <View style={styles.editorBottomPanel}>
-          
-          {/* Action Bar (Keyframe, Undo, Redo) */}
-          <View style={styles.topActions}>
-             <TouchableOpacity style={styles.actionCircle}>
-                <MaterialCommunityIcons name="key-variant" size={20} color="#00E5FF" />
-                <Text style={styles.actionLabel}>Key</Text>
-             </TouchableOpacity>
-             <View style={{flexDirection:'row', gap: 20}}>
-                <Ionicons name="arrow-undo-outline" size={22} color="#fff" />
-                <Ionicons name="arrow-redo-outline" size={22} color="#fff" />
-             </View>
+        {/* 3. THE MAGIC MIDDLE BAR (Play Button Between Video & Timeline) */}
+        <View style={styles.middleControlBar}>
+          <View style={styles.timeTextContainer}>
+             <Text style={styles.timerText}>00:00 / 00:15</Text>
           </View>
 
-          {/* Real Scrollable Timeline */}
-          <View style={styles.timelineWrapper}>
-            <View style={styles.centerIndicator} />
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              scrollEventThrottle={16}
-              contentContainerStyle={{paddingHorizontal: width/2}}
+          <TouchableOpacity 
+            onPress={() => setIsPlaying(!isPlaying)} 
+            style={styles.centerPlayBtn}
+          >
+            <Ionicons name={isPlaying ? "pause" : "play"} size={20} color="#000" />
+          </TouchableOpacity>
+
+          <View style={styles.rightIcons}>
+            <TouchableOpacity style={styles.keyBtn}>
+              <MaterialCommunityIcons name="key-variant" size={18} color="#00E5FF" />
+              <Text style={styles.keyLabel}>KEY</Text>
+            </TouchableOpacity>
+            <Ionicons name="arrow-undo-outline" size={20} color="#fff" style={{marginLeft: 15}} />
+          </View>
+        </View>
+
+        {/* 4. TIMELINE AREA */}
+        <View style={styles.timelineSection}>
+          <View style={styles.playheadLine} />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingHorizontal: width/2}}>
+            <LinearGradient 
+              colors={['#1A1A1A', '#00E5FF', '#1A1A1A']} 
+              start={{x:0, y:0.5}} end={{x:1, y:0.5}} 
+              style={styles.videoTrack}
             >
-              <LinearGradient 
-                colors={['#333', '#444', '#333']} 
-                start={{x:0, y:0}} end={{x:1, y:0}}
-                style={styles.videoTrack}
-              >
-                <Text style={styles.trackText}>Video Layer 01</Text>
-              </LinearGradient>
-            </ScrollView>
-          </View>
+              <Text style={styles.trackInfo}>Video Layer 1</Text>
+            </LinearGradient>
+          </ScrollView>
+        </View>
 
-          {/* Expanded Tools Menu */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mainTools}>
+        {/* 5. BOTTOM TOOLS */}
+        <View style={styles.footerTools}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {[
-              {n: 'Edit', i: 'cut-outline'},
-              {n: 'Audio', i: 'musical-notes-outline'},
-              {n: 'Text', i: 'text-outline'},
-              {n: 'Overlay', i: 'copy-outline'},
-              {n: 'Effects', i: 'sparkles-outline'},
-              {n: 'Filters', i: 'color-filter-outline'},
-              {n: 'Adjust', i: 'options-outline'},
-              {n: 'Canvas', i: 'browsers-outline'},
-            ].map((tool, index) => (
-              <TouchableOpacity key={index} style={styles.toolBtn}>
-                <Ionicons name={tool.i} size={24} color="#fff" />
-                <Text style={styles.toolTxt}>{tool.n}</Text>
+              {n: 'Split', i: 'cut-outline'}, {n: 'Audio', i: 'musical-note-outline'},
+              {n: 'Text', i: 'text-outline'}, {n: 'Filter', i: 'color-filter-outline'},
+              {n: 'Effect', i: 'sparkles-outline'}, {n: 'Speed', i: 'speedometer-outline'}
+            ].map((t, i) => (
+              <TouchableOpacity key={i} style={styles.toolBtn}>
+                <Ionicons name={t.i} size={22} color="#fff" />
+                <Text style={styles.toolTxt}>{t.n}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -119,54 +104,62 @@ export default function App() {
     );
   }
 
-  // --- HOME SCREEN (ULTRA MODERN) ---
+  // Basic Home Placeholder
   return (
-    <View style={styles.homeContainer}>
-      <StatusBar barStyle="light-content" />
-      <LinearGradient colors={['#000', '#1A1A1A']} style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-        <Text style={styles.homeLogo}>CRYSTEL <Text style={{color:'#00E5FF'}}>PRO</Text></Text>
-        <TouchableOpacity style={styles.bigHeroBtn} onPress={pickVideo}>
-          <LinearGradient colors={['#00E5FF', '#0097A7']} style={styles.gradientBtn}>
-            <Ionicons name="add" size={40} color="#000" />
-          </LinearGradient>
-          <Text style={styles.heroLabel}>New Project</Text>
-        </TouchableOpacity>
-      </LinearGradient>
+    <View style={{flex:1, backgroundColor:'#000', justifyContent:'center', alignItems:'center'}}>
+      <TouchableOpacity onPress={pickVideo} style={{backgroundColor:'#00E5FF', padding:20, borderRadius:15}}>
+        <Text style={{fontWeight:'bold'}}>OPEN PROJECT</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // Editor Styles
   editorContainer: { flex: 1, backgroundColor: '#000' },
-  navBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15, backgroundColor: '#000' },
-  proLogo: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 1 },
-  exportBtn: { backgroundColor: '#00E5FF', paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10 },
-  exportText: { color: '#000', fontWeight: 'bold' },
-  previewArea: { flex: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center' },
-  fullVideo: { width: '100%', height: '100%' },
-  playOverlay: { position: 'absolute', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: 50, padding: 10 },
-
-  // Timeline UI
-  editorBottomPanel: { height: height * 0.42, backgroundColor: '#111', borderTopLeftRadius: 30, borderTopRightRadius: 30, paddingVertical: 15 },
-  topActions: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 15, alignItems: 'center' },
-  actionCircle: { alignItems: 'center' },
-  actionLabel: { color: '#00E5FF', fontSize: 10, fontWeight: 'bold' },
+  navBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15 },
+  proLogo: { color: '#fff', fontSize: 16, fontWeight: '900' },
+  exportBtn: { backgroundColor: '#00E5FF', paddingHorizontal: 15, paddingVertical: 6, borderRadius: 8 },
+  exportText: { color: '#000', fontWeight: 'bold', fontSize: 12 },
   
-  timelineWrapper: { height: 100, position: 'relative', justifyContent: 'center' },
-  centerIndicator: { position: 'absolute', left: width / 2, height: '100%', width: 2, backgroundColor: '#00E5FF', zIndex: 10 },
-  videoTrack: { width: 600, height: 60, borderRadius: 10, justifyContent: 'center', paddingLeft: 20, borderTopWidth: 1, borderTopColor: '#555' },
-  trackText: { color: '#aaa', fontSize: 12, fontWeight: '600' },
+  previewArea: { height: height * 0.4, backgroundColor: '#000' },
+  fullVideo: { width: '100%', height: '100%' },
 
-  mainTools: { marginTop: 30, paddingLeft: 20 },
-  toolBtn: { alignItems: 'center', marginRight: 30 },
-  toolTxt: { color: '#fff', fontSize: 11, marginTop: 8 },
+  // --- MIDDLE BAR STYLES ---
+  middleControlBar: { 
+    height: 60, 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    paddingHorizontal: 20,
+    backgroundColor: '#000'
+  },
+  timeTextContainer: { width: 100 },
+  timerText: { color: '#8E8E93', fontSize: 10, fontWeight: '600' },
+  centerPlayBtn: { 
+    backgroundColor: '#00E5FF', 
+    width: 38, 
+    height: 38, 
+    borderRadius: 19, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    elevation: 10,
+    shadowColor: '#00E5FF',
+    shadowOpacity: 0.4,
+    shadowRadius: 5
+  },
+  rightIcons: { flexDirection: 'row', alignItems: 'center', width: 100, justifyContent: 'flex-end' },
+  keyBtn: { alignItems: 'center' },
+  keyLabel: { color: '#00E5FF', fontSize: 8, fontWeight: 'bold' },
 
-  // Home Screen
-  homeContainer: { flex: 1 },
-  homeLogo: { fontSize: 35, fontWeight: '900', color: '#fff', marginBottom: 50 },
-  bigHeroBtn: { alignItems: 'center' },
-  gradientBtn: { width: 100, height: 100, borderRadius: 50, justifyContent: 'center', alignItems: 'center', elevation: 20, shadowColor: '#00E5FF', shadowOpacity: 0.5, shadowRadius: 20 },
-  heroLabel: { color: '#fff', fontSize: 20, fontWeight: 'bold', marginTop: 15 }
+  // --- TIMELINE STYLES ---
+  timelineSection: { height: 100, backgroundColor: '#111', justifyContent: 'center' },
+  playheadLine: { position: 'absolute', left: width/2, height: '100%', width: 2, backgroundColor: '#fff', zIndex: 10 },
+  videoTrack: { width: 800, height: 55, borderRadius: 8, justifyContent: 'center', paddingLeft: 15 },
+  trackInfo: { color: '#000', fontSize: 10, fontWeight: 'bold' },
+
+  // --- FOOTER STYLES ---
+  footerTools: { height: 80, backgroundColor: '#000', borderTopWidth: 0.5, borderTopColor: '#222', paddingTop: 10 },
+  toolBtn: { alignItems: 'center', marginHorizontal: 18 },
+  toolTxt: { color: '#8E8E93', fontSize: 10, marginTop: 5 }
 });
   
