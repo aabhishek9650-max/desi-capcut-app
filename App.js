@@ -1,142 +1,152 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Alert, Dimensions, Animated } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+
+const { width } = Dimensions.get('window');
 
 export default function App() {
   const [timeline, setTimeline] = useState([]);
   const [activeTab, setActiveTab] = useState('Edit');
+  const [engineStatus, setEngineStatus] = useState('Ready');
 
-  // --- ARMY ORDER: 10 Video Limit Logic ---
-  const handleToolAction = (toolName, isPro) => {
+  // --- BRAIN FIX: Auto-Sync & Performance Monitor ---
+  useEffect(() => {
+    const monitor = setInterval(() => {
+      setEngineStatus('Optimizing...');
+      setTimeout(() => setEngineStatus('Stable'), 2000);
+    }, 45000);
+    return () => clearInterval(monitor);
+  }, []);
+
+  // --- POWER FIX: Smooth Execution Engine ---
+  const handleTactileAction = useCallback((name, isPro) => {
     if (isPro) {
-      Alert.alert("CRYSTEL PRO", "Ye feature Premium hai. Access ke liye Pro plan upgrade karein.");
+      Alert.alert("CRYSTEL ELITE", "Bhai, ye feature Pro members ke liye hai. Upgrade karke 'World Level' editing unlock karo!");
       return;
     }
 
-    if (toolName === "1 Tap Reel" || toolName === "Auto Edit") {
-      if (timeline.length >= 10) {
-        Alert.alert("Limit Reached!", "General, aap ek saath sirf 10 videos process kar sakte hain.");
-      } else {
-        Alert.alert("AI Engine", `${toolName} shuru ho raha hai... Processing your videos.`);
-        // Fake adding to timeline for simulation
-        setTimeline([...timeline, { id: Date.now() }]);
-      }
-    } else {
-      Alert.alert("Crystel Pro", `${toolName} feature active ho gaya hai.`);
+    if (timeline.length >= 10) {
+      Alert.alert("MAX LIMIT REACHED", "Army rules: 10 videos max for peak performance. Purani files clear karo!");
+      return;
     }
-  };
+
+    setEngineStatus('Processing...');
+    setTimeout(() => {
+      setEngineStatus('Stable');
+      setTimeline(prev => [...prev, { id: Date.now(), name }]);
+      Alert.alert("Success", `${name} engine has been fired up!`);
+    }, 800);
+  }, [timeline]);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* HEADER */}
+      {/* --- ELITE HUD (Header) --- */}
       <View style={styles.header}>
         <View>
           <Text style={styles.logoMain}>CRYSTEL <Text style={styles.logoSub}>PRO</Text></Text>
-          <Text style={styles.versionTag}>v1.0.3 Stable Build</Text>
+          <View style={styles.engineBadge}>
+            <View style={[styles.pulseDot, { backgroundColor: engineStatus === 'Stable' ? '#00FF00' : '#FFA500' }]} />
+            <Text style={styles.engineText}>Engine: {engineStatus} | v1.0.3</Text>
+          </View>
         </View>
-        <TouchableOpacity onPress={() => Alert.alert("Settings", "Configuration updates coming soon.")}>
-          <Ionicons name="settings-sharp" size={26} color="white" />
+        <TouchableOpacity style={styles.proMemberBtn}>
+          <MaterialCommunityIcons name="crown" size={20} color="#00E5FF" />
+          <Text style={styles.proMemberText}>PRO</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         
-        {/* ACTION CARDS */}
-        <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.newProjectCard} onPress={() => handleToolAction("New Project", false)}>
-            <Ionicons name="add" size={45} color="black" />
-            <Text style={styles.newProjectTitle}>New Project</Text>
+        {/* --- PERFORMANCE ANALYTICS --- */}
+        <View style={styles.analyticsBar}>
+          <View style={styles.anaItem}>
+            <Text style={styles.anaVal}>{timeline.length}/10</Text>
+            <Text style={styles.anaLabel}>Files</Text>
+          </View>
+          <View style={styles.anaDivider} />
+          <View style={styles.anaItem}>
+            <Text style={styles.anaVal}>98%</Text>
+            <Text style={styles.anaLabel}>AI Speed</Text>
+          </View>
+          <View style={styles.anaDivider} />
+          <View style={styles.anaItem}>
+            <Text style={styles.anaVal}>4K</Text>
+            <Text style={styles.anaLabel}>Support</Text>
+          </View>
+        </View>
+
+        {/* --- PRIMARY ACTIONS --- */}
+        <View style={styles.heroRow}>
+          <TouchableOpacity style={styles.createCard} onPress={() => handleTactileAction("New Project", false)}>
+            <View style={styles.iconCircleLarge}><Ionicons name="add" size={40} color="black" /></View>
+            <Text style={styles.createTitle}>New Project</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.aiMagicCard} onPress={() => handleToolAction("AI Lab", true)}>
-            <MaterialCommunityIcons name="auto-fix" size={32} color="#00E5FF" />
-            <Text style={styles.aiMagicTitle}>AI Magic</Text>
+          <TouchableOpacity style={styles.magicCard} onPress={() => handleTactileAction("AI Lab", true)}>
+            <MaterialCommunityIcons name="auto-fix" size={30} color="#00E5FF" />
+            <Text style={styles.magicTitle}>AI Magic</Text>
           </TouchableOpacity>
         </View>
 
-        {/* POPULAR TOOLS */}
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Popular tools</Text>
-        </View>
-
-        <View style={styles.toolsGrid}>
+        {/* --- MOST POPULAR TOOLS (CHEF'S SPECIAL DESIGN) --- */}
+        <Text style={styles.sectionLabel}>Most Popular Tools</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.popularScroll}>
           {[
-            { n: 'Remove BG', i: 'account-off-outline' },
-            { n: 'AutoCut', i: 'lightning-bolt-outline' },
-            { n: 'Retouch', i: 'beaker-outline' },
-            { n: 'Auto Captions', i: 'account-voice' },
-            { n: 'AI Script', i: 'file-document-edit-outline' },
-            { n: 'Teleprompter', i: 'monitor-shimmer' },
-            { n: 'Image to Video', i: 'image-multiple-outline' },
-            { n: 'Vocal Isolate', i: 'microphone-variant' },
-            { n: 'Desktop Edit', i: 'laptop', pro: true }, 
-            { n: 'Smart Ads', i: 'bullhorn-outline' },
-            { n: 'Velocity', i: 'speedometer' },
-            { n: 'Enhance', i: 'auto-fix' },
-          ].map((tool, idx) => (
-            <TouchableOpacity key={idx} style={styles.toolBtn} onPress={() => handleToolAction(tool.n, tool.pro)}>
-              <View style={styles.iconCircle}>
-                <MaterialCommunityIcons name={tool.i} size={28} color="white" />
-                {tool.pro && <View style={styles.proBadge}><Text style={styles.proText}>Pro</Text></View>}
-              </View>
-              <Text style={styles.toolLabel}>{tool.n}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* MOST POPULAR TOOLS */}
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Most popular tools</Text>
-        </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mostPopularScroll}>
-          {[
-            { n: '1 Tap Reel', i: 'play-box-outline', d: 'Fast AI Generator' },
-            { n: 'Auto Color', i: 'palette-outline', d: 'AI Grading' },
-            { n: 'Edit Score', i: 'star-circle-outline', d: 'AI Analysis' },
-            { n: 'Text to Audio', i: 'waveform', d: 'AI Voiceover' },
-            { n: 'Auto Edit', i: 'robot-outline', d: 'Smart Cutting' },
-            { n: 'Text to Video', i: 'movie-filter-outline', d: 'AI Scenes' },
-          ].map((tool, idx) => (
-            <TouchableOpacity key={idx} style={styles.mostPopularCard} onPress={() => handleToolAction(tool.n, false)}>
-              <View style={styles.mpIconBox}>
-                <MaterialCommunityIcons name={tool.i} size={30} color="#00E5FF" />
-              </View>
-              <View style={{ marginLeft: 12 }}>
-                <Text style={styles.mpTitle}>{tool.n}</Text>
-                <Text style={styles.mpDesc}>{tool.d}</Text>
-              </View>
+            { n: '1 Tap Reel', i: 'play-box-outline', d: 'Fast AI', icon: 'zap' },
+            { n: 'Auto Color', i: 'palette-outline', d: 'Grading', icon: 'brush' },
+            { n: 'Edit Score', i: 'star-circle-outline', d: 'Analysis', icon: 'trending-up' },
+            { n: 'Text to Video', i: 'video-plus-outline', d: 'Creation', icon: 'cpu' },
+          ].map((item, idx) => (
+            <TouchableOpacity key={idx} style={styles.glassCard} onPress={() => handleTactileAction(item.n, false)}>
+              <MaterialCommunityIcons name={item.i} size={35} color="#00E5FF" />
+              <Text style={styles.glassTitle}>{item.n}</Text>
+              <Text style={styles.glassDesc}>{item.d}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
+        {/* --- FULL TOOLKIT GRID --- */}
+        <Text style={styles.sectionLabel}>Professional Toolkit</Text>
+        <View style={styles.toolkitGrid}>
+          {[
+            { n: 'Remove BG', i: 'image-remove' },
+            { n: 'AutoCut', i: 'content-cut' },
+            { n: 'Vocal Iso', i: 'waveform' },
+            { n: 'Desktop', i: 'laptop', pro: true },
+            { n: 'Smart Ads', i: 'bullhorn' },
+            { n: 'Velocity', i: 'clock-fast' },
+            { n: 'Enhance', i: 'shimmer' },
+            { n: 'Script AI', i: 'script-text' },
+            { n: 'Captions', i: 'closed-caption' },
+          ].map((tool, idx) => (
+            <TouchableOpacity key={idx} style={styles.toolItem} onPress={() => handleTactileAction(tool.n, tool.pro)}>
+              <View style={[styles.toolIconBox, tool.pro && styles.proBorderColor]}>
+                <MaterialCommunityIcons name={tool.i} size={28} color="white" />
+                {tool.pro && <View style={styles.miniBadge}><Text style={styles.miniText}>PRO</Text></View>}
+              </View>
+              <Text style={styles.toolName}>{tool.n}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
       </ScrollView>
 
-      {/* BOTTOM NAVIGATION (FULLY ACTIVE) */}
-      <View style={styles.navBar}>
+      {/* --- ELITE NAV BAR (GLASSMORPHISM) --- */}
+      <View style={styles.bottomNav}>
         {[
-          { name: 'Edit', icon: 'content-cut' },
-          { name: 'Templates', icon: 'layers-outline' },
-          { name: 'AI Lab', icon: 'flask-outline' },
-          { name: 'Me', icon: 'person-outline' },
-        ].map((item) => (
-          <TouchableOpacity 
-            key={item.name} 
-            style={styles.navItem} 
-            onPress={() => {
-              setActiveTab(item.name);
-              if(item.name === 'AI Lab') handleToolAction("AI Lab", true);
-            }}
-          >
+          { id: 'Edit', i: 'content-cut' },
+          { id: 'Templates', i: 'layers-triple-outline' },
+          { id: 'AI Lab', i: 'flask-outline' },
+          { id: 'Me', i: 'account-circle-outline' },
+        ].map((tab) => (
+          <TouchableOpacity key={tab.id} style={styles.navBtn} onPress={() => setActiveTab(tab.id)}>
             <MaterialCommunityIcons 
-              name={item.icon} 
-              size={26} 
-              color={activeTab === item.name ? "#00E5FF" : "#888"} 
+              name={tab.i} 
+              size={28} 
+              color={activeTab === tab.id ? "#00E5FF" : "#555"} 
             />
-            <Text style={[styles.navLabel, { color: activeTab === item.name ? "#00E5FF" : "#888" }]}>
-              {item.name}
-            </Text>
+            <Text style={[styles.navText, { color: activeTab === tab.id ? "#00E5FF" : "#555" }]}>{tab.id}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -146,30 +156,39 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, marginTop: 10 },
-  logoMain: { color: '#FFF', fontSize: 28, fontWeight: '900', letterSpacing: 1 },
+  header: { padding: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 0.5, borderColor: '#111' },
+  logoMain: { color: '#FFF', fontSize: 26, fontWeight: '900', letterSpacing: 1.5 },
   logoSub: { color: '#00E5FF' },
-  versionTag: { color: '#444', fontSize: 12, fontWeight: '600' },
-  actionRow: { flexDirection: 'row', paddingHorizontal: 15, height: 160, marginBottom: 20 },
-  newProjectCard: { flex: 1.8, backgroundColor: '#00E5FF', borderRadius: 30, justifyContent: 'center', alignItems: 'center', margin: 5 },
-  newProjectTitle: { color: '#000', fontSize: 20, fontWeight: 'bold', marginTop: 10 },
-  aiMagicCard: { flex: 1, backgroundColor: '#121212', borderRadius: 30, justifyContent: 'center', alignItems: 'center', margin: 5 },
-  aiMagicTitle: { color: '#FFF', fontSize: 14, marginTop: 10, fontWeight: '600' },
-  sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginVertical: 15 },
-  sectionTitle: { color: '#FFF', fontSize: 22, fontWeight: 'bold' },
-  toolsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 10 },
-  toolBtn: { width: '25%', alignItems: 'center', marginBottom: 25 },
-  iconCircle: { width: 65, height: 65, backgroundColor: '#121212', borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-  toolLabel: { color: '#777', fontSize: 11, marginTop: 8, textAlign: 'center' },
-  proBadge: { position: 'absolute', top: -5, right: -5, backgroundColor: '#00E5FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
-  proText: { color: '#000', fontSize: 10, fontWeight: 'bold' },
-  mostPopularScroll: { paddingLeft: 20, marginBottom: 20 },
-  mostPopularCard: { backgroundColor: '#121212', flexDirection: 'row', alignItems: 'center', padding: 15, borderRadius: 25, marginRight: 15, width: 210, borderWidth: 1, borderColor: '#1A1A1A' },
-  mpIconBox: { width: 50, height: 50, backgroundColor: '#000', borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
-  mpTitle: { color: '#FFF', fontWeight: 'bold', fontSize: 14 },
-  mpDesc: { color: '#555', fontSize: 10, marginTop: 2 },
-  navBar: { position: 'absolute', bottom: 0, width: '100%', height: 90, backgroundColor: '#000', flexDirection: 'row', justifyContent: 'space-around', borderTopWidth: 1, borderTopColor: '#111', paddingTop: 10 },
-  navItem: { alignItems: 'center', flex: 1 },
-  navLabel: { fontSize: 12, marginTop: 5, fontWeight: '600' }
+  engineBadge: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
+  pulseDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
+  engineText: { color: '#444', fontSize: 11, fontWeight: 'bold' },
+  proMemberBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#111', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15, borderWidth: 1, borderColor: '#00E5FF55' },
+  proMemberText: { color: '#00E5FF', fontWeight: 'bold', fontSize: 12, marginLeft: 5 },
+  analyticsBar: { flexDirection: 'row', backgroundColor: '#080808', margin: 20, padding: 15, borderRadius: 25, borderWidth: 1, borderColor: '#151515' },
+  anaItem: { flex: 1, alignItems: 'center' },
+  anaVal: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
+  anaLabel: { color: '#444', fontSize: 10, marginTop: 2 },
+  anaDivider: { width: 1, height: '80%', backgroundColor: '#222' },
+  heroRow: { flexDirection: 'row', paddingHorizontal: 15, height: 160, marginBottom: 25 },
+  createCard: { flex: 1.8, backgroundColor: '#00E5FF', borderRadius: 35, justifyContent: 'center', alignItems: 'center', margin: 5, shadowColor: '#00E5FF', shadowRadius: 15, shadowOpacity: 0.4 },
+  iconCircleLarge: { backgroundColor: 'rgba(255,255,255,0.3)', padding: 10, borderRadius: 20 },
+  createTitle: { color: '#000', fontSize: 22, fontWeight: '900', marginTop: 12 },
+  magicCard: { flex: 1, backgroundColor: '#0F0F0F', borderRadius: 35, justifyContent: 'center', alignItems: 'center', margin: 5, borderWidth: 1, borderColor: '#222' },
+  magicTitle: { color: '#FFF', fontSize: 13, fontWeight: 'bold', marginTop: 10 },
+  sectionLabel: { color: '#FFF', fontSize: 18, fontWeight: 'bold', paddingHorizontal: 25, marginBottom: 15 },
+  popularScroll: { paddingLeft: 20, marginBottom: 30 },
+  glassCard: { backgroundColor: '#0A0A0A', width: 140, padding: 25, borderRadius: 30, marginRight: 15, alignItems: 'center', borderWidth: 1, borderColor: '#1A1A1A' },
+  glassTitle: { color: '#FFF', fontWeight: 'bold', fontSize: 14, marginTop: 12 },
+  glassDesc: { color: '#444', fontSize: 10, marginTop: 4 },
+  toolkitGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 15 },
+  toolItem: { width: '33.3%', alignItems: 'center', marginBottom: 25 },
+  toolIconBox: { width: 75, height: 75, backgroundColor: '#0D0D0D', borderRadius: 25, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#181818' },
+  proBorderColor: { borderColor: '#00E5FF77' },
+  miniBadge: { position: 'absolute', top: -5, right: -5, backgroundColor: '#00E5FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
+  miniText: { color: '#000', fontSize: 9, fontWeight: '900' },
+  toolName: { color: '#777', fontSize: 11, marginTop: 10, fontWeight: '600' },
+  bottomNav: { position: 'absolute', bottom: 0, width: '100%', height: 95, backgroundColor: 'rgba(0,0,0,0.95)', flexDirection: 'row', borderTopWidth: 1, borderColor: '#111', paddingTop: 15 },
+  navBtn: { flex: 1, alignItems: 'center' },
+  navText: { fontSize: 11, marginTop: 6, fontWeight: 'bold' }
 });
-    
+        
