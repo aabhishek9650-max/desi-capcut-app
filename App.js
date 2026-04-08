@@ -85,6 +85,32 @@ export default function App() {
           ))}
         </View>
 
+        {/* --- MOST POPULAR TOOLS (NEW SECTION) --- */}
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>Most popular tools</Text>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mostPopularScroll}>
+          {[
+            { n: '1 Tap Reel', i: 'play-box-outline', d: 'Fast AI Generator' },
+            { n: 'Auto Color', i: 'palette-outline', d: 'AI Grading' },
+            { n: 'Edit Score', i: 'star-circle-outline', d: 'AI Analysis' },
+            { n: 'Text to Audio', i: 'waveform', d: 'AI Voiceover' },
+            { n: 'Auto Edit', i: 'robot-outline', d: 'Smart Cutting' },
+            { n: 'Text to Video', i: 'movie-filter-outline', d: 'AI Scenes' },
+          ].map((tool, idx) => (
+            <TouchableOpacity key={idx} style={styles.mostPopularCard}>
+              <View style={styles.mpIconBox}>
+                <MaterialCommunityIcons name={tool.i} size={30} color="#00E5FF" />
+              </View>
+              <View style={{ marginLeft: 12 }}>
+                <Text style={styles.mpTitle}>{tool.n}</Text>
+                <Text style={styles.mpDesc}>{tool.d}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
         {/* --- BANNER --- */}
         <TouchableOpacity style={styles.banner}>
           <View style={styles.bannerLeft}>
@@ -151,7 +177,12 @@ const styles = StyleSheet.create({
   toolLabel: { color: '#777', fontSize: 11, marginTop: 8, textAlign: 'center' },
   proBadge: { position: 'absolute', top: -5, right: -5, backgroundColor: '#00E5FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
   proText: { color: '#000', fontSize: 10, fontWeight: 'bold' },
-  banner: { backgroundColor: '#0A0A0A', marginHorizontal: 20, padding: 22, borderRadius: 30, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, borderWidth: 1, borderColor: '#111' },
+  mostPopularScroll: { paddingLeft: 20, marginBottom: 20 },
+  mostPopularCard: { backgroundColor: '#121212', flexDirection: 'row', alignItems: 'center', padding: 15, borderRadius: 25, marginRight: 15, width: 210, borderWidth: 1, borderColor: '#1A1A1A' },
+  mpIconBox: { width: 50, height: 50, backgroundColor: '#000', borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
+  mpTitle: { color: '#FFF', fontWeight: 'bold', fontSize: 14 },
+  mpDesc: { color: '#555', fontSize: 10, marginTop: 2 },
+  banner: { backgroundColor: '#0A0A0A', marginHorizontal: 20, padding: 22, borderRadius: 30, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, marginBottom: 20, borderWidth: 1, borderColor: '#111' },
   bannerLeft: { flexDirection: 'row', alignItems: 'center' },
   bannerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
   bannerSub: { color: '#444', fontSize: 12, marginTop: 2 },
