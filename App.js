@@ -1,63 +1,64 @@
-import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function App() {
+  const [timeline, setTimeline] = useState([]);
+  const [activeTab, setActiveTab] = useState('Edit');
+
+  // --- ARMY ORDER: 10 Video Limit Logic ---
+  const handleToolAction = (toolName, isPro) => {
+    if (isPro) {
+      Alert.alert("CRYSTEL PRO", "Ye feature Premium hai. Access ke liye Pro plan upgrade karein.");
+      return;
+    }
+
+    if (toolName === "1 Tap Reel" || toolName === "Auto Edit") {
+      if (timeline.length >= 10) {
+        Alert.alert("Limit Reached!", "General, aap ek saath sirf 10 videos process kar sakte hain.");
+      } else {
+        Alert.alert("AI Engine", `${toolName} shuru ho raha hai... Processing your videos.`);
+        // Fake adding to timeline for simulation
+        setTimeline([...timeline, { id: Date.now() }]);
+      }
+    } else {
+      Alert.alert("Crystel Pro", `${toolName} feature active ho gaya hai.`);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* --- HEADER --- */}
+      {/* HEADER */}
       <View style={styles.header}>
         <View>
           <Text style={styles.logoMain}>CRYSTEL <Text style={styles.logoSub}>PRO</Text></Text>
           <Text style={styles.versionTag}>v1.0.3 Stable Build</Text>
         </View>
-        <TouchableOpacity style={styles.settingsBtn}>
+        <TouchableOpacity onPress={() => Alert.alert("Settings", "Configuration updates coming soon.")}>
           <Ionicons name="settings-sharp" size={26} color="white" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         
-        {/* --- TOP ACTION CARDS --- */}
+        {/* ACTION CARDS */}
         <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.newProjectCard}>
+          <TouchableOpacity style={styles.newProjectCard} onPress={() => handleToolAction("New Project", false)}>
             <Ionicons name="add" size={45} color="black" />
             <Text style={styles.newProjectTitle}>New Project</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.aiMagicCard}>
+          <TouchableOpacity style={styles.aiMagicCard} onPress={() => handleToolAction("AI Lab", true)}>
             <MaterialCommunityIcons name="auto-fix" size={32} color="#00E5FF" />
             <Text style={styles.aiMagicTitle}>AI Magic</Text>
           </TouchableOpacity>
         </View>
 
-        {/* --- RECENT PROJECTS --- */}
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Recent Projects</Text>
-          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
-        </View>
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.projectScroll}>
-          {[1, 2, 3].map((i) => (
-            <View key={i} style={styles.projectCard}>
-              <View style={styles.thumbPlaceholder}>
-                <Ionicons name="play-sharp" size={30} color="rgba(255,255,255,0.3)" />
-              </View>
-              <Text style={styles.pName}>Project_040{i}</Text>
-              <Text style={styles.pDate}>07/04/2026</Text>
-            </View>
-          ))}
-        </ScrollView>
-
-        {/* --- POPULAR TOOLS --- */}
+        {/* POPULAR TOOLS */}
         <View style={styles.sectionHead}>
           <Text style={styles.sectionTitle}>Popular tools</Text>
-          <View style={styles.tabBar}>
-            <TouchableOpacity style={styles.tabActive}><Text style={styles.tabTextActive}>General</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.tabInactive}><Text style={styles.tabTextInactive}>Marketing</Text></TouchableOpacity>
-          </View>
         </View>
 
         <View style={styles.toolsGrid}>
@@ -69,13 +70,13 @@ export default function App() {
             { n: 'AI Script', i: 'file-document-edit-outline' },
             { n: 'Teleprompter', i: 'monitor-shimmer' },
             { n: 'Image to Video', i: 'image-multiple-outline' },
-            { n: 'Vocal Isolate', i: 'microphone-minus-outline' },
-            { n: 'Desktop Edit', i: 'laptop', pro: true },
-            { n: 'Smart Ads', i: 'megaphone-outline' },
-            { n: 'Velocity', i: 'speedometer-outline' },
+            { n: 'Vocal Isolate', i: 'microphone-variant' },
+            { n: 'Desktop Edit', i: 'laptop', pro: true }, 
+            { n: 'Smart Ads', i: 'bullhorn-outline' },
+            { n: 'Velocity', i: 'speedometer' },
             { n: 'Enhance', i: 'auto-fix' },
           ].map((tool, idx) => (
-            <TouchableOpacity key={idx} style={styles.toolBtn}>
+            <TouchableOpacity key={idx} style={styles.toolBtn} onPress={() => handleToolAction(tool.n, tool.pro)}>
               <View style={styles.iconCircle}>
                 <MaterialCommunityIcons name={tool.i} size={28} color="white" />
                 {tool.pro && <View style={styles.proBadge}><Text style={styles.proText}>Pro</Text></View>}
@@ -85,11 +86,10 @@ export default function App() {
           ))}
         </View>
 
-        {/* --- MOST POPULAR TOOLS (NEW SECTION) --- */}
+        {/* MOST POPULAR TOOLS */}
         <View style={styles.sectionHead}>
           <Text style={styles.sectionTitle}>Most popular tools</Text>
         </View>
-
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mostPopularScroll}>
           {[
             { n: '1 Tap Reel', i: 'play-box-outline', d: 'Fast AI Generator' },
@@ -99,7 +99,7 @@ export default function App() {
             { n: 'Auto Edit', i: 'robot-outline', d: 'Smart Cutting' },
             { n: 'Text to Video', i: 'movie-filter-outline', d: 'AI Scenes' },
           ].map((tool, idx) => (
-            <TouchableOpacity key={idx} style={styles.mostPopularCard}>
+            <TouchableOpacity key={idx} style={styles.mostPopularCard} onPress={() => handleToolAction(tool.n, false)}>
               <View style={styles.mpIconBox}>
                 <MaterialCommunityIcons name={tool.i} size={30} color="#00E5FF" />
               </View>
@@ -111,38 +111,34 @@ export default function App() {
           ))}
         </ScrollView>
 
-        {/* --- BANNER --- */}
-        <TouchableOpacity style={styles.banner}>
-          <View style={styles.bannerLeft}>
-            <MaterialCommunityIcons name="rocket-launch" size={30} color="#00E5FF" />
-            <View style={{ marginLeft: 15 }}>
-              <Text style={styles.bannerTitle}>Become a Creator</Text>
-              <Text style={styles.bannerSub}>Get verified badge & share templates</Text>
-            </View>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color="#444" />
-        </TouchableOpacity>
-
       </ScrollView>
 
-      {/* --- BOTTOM NAVIGATION --- */}
+      {/* BOTTOM NAVIGATION (FULLY ACTIVE) */}
       <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="content-cut" size={26} color="#00E5FF" />
-          <Text style={[styles.navLabel, { color: '#00E5FF' }]}>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="layers-outline" size={26} color="#888" />
-          <Text style={styles.navLabel}>Templates</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="flask-outline" size={26} color="#888" />
-          <Text style={styles.navLabel}>AI Lab</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person-outline" size={26} color="#888" />
-          <Text style={styles.navLabel}>Me</Text>
-        </TouchableOpacity>
+        {[
+          { name: 'Edit', icon: 'content-cut' },
+          { name: 'Templates', icon: 'layers-outline' },
+          { name: 'AI Lab', icon: 'flask-outline' },
+          { name: 'Me', icon: 'person-outline' },
+        ].map((item) => (
+          <TouchableOpacity 
+            key={item.name} 
+            style={styles.navItem} 
+            onPress={() => {
+              setActiveTab(item.name);
+              if(item.name === 'AI Lab') handleToolAction("AI Lab", true);
+            }}
+          >
+            <MaterialCommunityIcons 
+              name={item.icon} 
+              size={26} 
+              color={activeTab === item.name ? "#00E5FF" : "#888"} 
+            />
+            <Text style={[styles.navLabel, { color: activeTab === item.name ? "#00E5FF" : "#888" }]}>
+              {item.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
     </SafeAreaView>
   );
@@ -154,23 +150,13 @@ const styles = StyleSheet.create({
   logoMain: { color: '#FFF', fontSize: 28, fontWeight: '900', letterSpacing: 1 },
   logoSub: { color: '#00E5FF' },
   versionTag: { color: '#444', fontSize: 12, fontWeight: '600' },
-  actionRow: { flexDirection: 'row', paddingHorizontal: 15, height: 180, marginBottom: 20 },
+  actionRow: { flexDirection: 'row', paddingHorizontal: 15, height: 160, marginBottom: 20 },
   newProjectCard: { flex: 1.8, backgroundColor: '#00E5FF', borderRadius: 30, justifyContent: 'center', alignItems: 'center', margin: 5 },
   newProjectTitle: { color: '#000', fontSize: 20, fontWeight: 'bold', marginTop: 10 },
   aiMagicCard: { flex: 1, backgroundColor: '#121212', borderRadius: 30, justifyContent: 'center', alignItems: 'center', margin: 5 },
   aiMagicTitle: { color: '#FFF', fontSize: 14, marginTop: 10, fontWeight: '600' },
   sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginVertical: 15 },
   sectionTitle: { color: '#FFF', fontSize: 22, fontWeight: 'bold' },
-  seeAll: { color: '#00E5FF', fontWeight: '600' },
-  projectScroll: { paddingLeft: 20 },
-  projectCard: { marginRight: 15 },
-  thumbPlaceholder: { width: 150, height: 150, backgroundColor: '#121212', borderRadius: 25, justifyContent: 'center', alignItems: 'center' },
-  pName: { color: '#FFF', marginTop: 10, fontWeight: 'bold', fontSize: 14 },
-  pDate: { color: '#444', fontSize: 12 },
-  tabBar: { flexDirection: 'row', backgroundColor: '#121212', borderRadius: 25, padding: 4 },
-  tabActive: { backgroundColor: '#222', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 20 },
-  tabTextActive: { color: '#FFF', fontWeight: 'bold' },
-  tabTextInactive: { color: '#444', paddingHorizontal: 10 },
   toolsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 10 },
   toolBtn: { width: '25%', alignItems: 'center', marginBottom: 25 },
   iconCircle: { width: 65, height: 65, backgroundColor: '#121212', borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
@@ -182,12 +168,8 @@ const styles = StyleSheet.create({
   mpIconBox: { width: 50, height: 50, backgroundColor: '#000', borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
   mpTitle: { color: '#FFF', fontWeight: 'bold', fontSize: 14 },
   mpDesc: { color: '#555', fontSize: 10, marginTop: 2 },
-  banner: { backgroundColor: '#0A0A0A', marginHorizontal: 20, padding: 22, borderRadius: 30, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, marginBottom: 20, borderWidth: 1, borderColor: '#111' },
-  bannerLeft: { flexDirection: 'row', alignItems: 'center' },
-  bannerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
-  bannerSub: { color: '#444', fontSize: 12, marginTop: 2 },
   navBar: { position: 'absolute', bottom: 0, width: '100%', height: 90, backgroundColor: '#000', flexDirection: 'row', justifyContent: 'space-around', borderTopWidth: 1, borderTopColor: '#111', paddingTop: 10 },
-  navItem: { alignItems: 'center' },
+  navItem: { alignItems: 'center', flex: 1 },
   navLabel: { fontSize: 12, marginTop: 5, fontWeight: '600' }
 });
     
