@@ -1,152 +1,139 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Alert, Dimensions, Animated } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-
-const { width } = Dimensions.get('window');
 
 export default function App() {
   const [timeline, setTimeline] = useState([]);
   const [activeTab, setActiveTab] = useState('Edit');
-  const [engineStatus, setEngineStatus] = useState('Ready');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [engineLoad, setEngineLoad] = useState('Optimum');
 
-  // --- BRAIN FIX: Auto-Sync & Performance Monitor ---
+  // --- BRAIN: Iron-Clad Logic & Performance Shield ---
   useEffect(() => {
-    const monitor = setInterval(() => {
-      setEngineStatus('Optimizing...');
-      setTimeout(() => setEngineStatus('Stable'), 2000);
-    }, 45000);
-    return () => clearInterval(monitor);
+    const shieldCheck = setInterval(() => {
+      setIsSyncing(true);
+      // Simulating background optimization
+      setTimeout(() => {
+        setIsSyncing(false);
+        setEngineLoad('Peak Performance');
+      }, 1500);
+    }, 40000);
+    return () => clearInterval(shieldCheck);
   }, []);
 
-  // --- POWER FIX: Smooth Execution Engine ---
-  const handleTactileAction = useCallback((name, isPro) => {
+  const handleAction = useCallback((name, isPro) => {
     if (isPro) {
-      Alert.alert("CRYSTEL ELITE", "Bhai, ye feature Pro members ke liye hai. Upgrade karke 'World Level' editing unlock karo!");
+      Alert.alert("CRYSTEL ELITE", "Commander's Permission Required for Pro Access.");
       return;
     }
 
     if (timeline.length >= 10) {
-      Alert.alert("MAX LIMIT REACHED", "Army rules: 10 videos max for peak performance. Purani files clear karo!");
+      Alert.alert("ENGINE LIMIT", "Army protocol allows max 10 active tracks.");
       return;
     }
 
-    setEngineStatus('Processing...');
+    // Realistic Processing Simulation
+    setEngineLoad('Processing...');
     setTimeout(() => {
-      setEngineStatus('Stable');
       setTimeline(prev => [...prev, { id: Date.now(), name }]);
-      Alert.alert("Success", `${name} engine has been fired up!`);
-    }, 800);
+      setEngineLoad('Peak Performance');
+      Alert.alert("Success", `${name} mode integrated into timeline.`);
+    }, 1000);
   }, [timeline]);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* --- ELITE HUD (Header) --- */}
+      {/* --- HUD: Performance Status --- */}
       <View style={styles.header}>
         <View>
           <Text style={styles.logoMain}>CRYSTEL <Text style={styles.logoSub}>PRO</Text></Text>
-          <View style={styles.engineBadge}>
-            <View style={[styles.pulseDot, { backgroundColor: engineStatus === 'Stable' ? '#00FF00' : '#FFA500' }]} />
-            <Text style={styles.engineText}>Engine: {engineStatus} | v1.0.3</Text>
+          <View style={styles.statusRow}>
+            <View style={[styles.statusDot, { backgroundColor: isSyncing ? '#FFA500' : '#00FF00' }]} />
+            <Text style={styles.statusText}>{isSyncing ? 'Optimizing...' : engineLoad} | v1.0.3</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.proMemberBtn}>
-          <MaterialCommunityIcons name="crown" size={20} color="#00E5FF" />
-          <Text style={styles.proMemberText}>PRO</Text>
+        <TouchableOpacity style={styles.shieldBtn}>
+          <MaterialCommunityIcons name="shield-check" size={24} color="#00E5FF" />
         </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         
-        {/* --- PERFORMANCE ANALYTICS --- */}
-        <View style={styles.analyticsBar}>
-          <View style={styles.anaItem}>
-            <Text style={styles.anaVal}>{timeline.length}/10</Text>
-            <Text style={styles.anaLabel}>Files</Text>
-          </View>
-          <View style={styles.anaDivider} />
-          <View style={styles.anaItem}>
-            <Text style={styles.anaVal}>98%</Text>
-            <Text style={styles.anaLabel}>AI Speed</Text>
-          </View>
-          <View style={styles.anaDivider} />
-          <View style={styles.anaItem}>
-            <Text style={styles.anaVal}>4K</Text>
-            <Text style={styles.anaLabel}>Support</Text>
-          </View>
+        {/* --- PERFORMANCE ANALYTICS (Bhai Special) --- */}
+        <View style={styles.statsCard}>
+          <View style={styles.statBox}><Text style={styles.statVal}>{timeline.length}/10</Text><Text style={styles.statSub}>Tracks</Text></View>
+          <View style={styles.statBox}><Text style={styles.statVal}>4.8ms</Text><Text style={styles.statSub}>Latency</Text></View>
+          <View style={styles.statBox}><Text style={styles.statVal}>Active</Text><Text style={styles.statSub}>Shield</Text></View>
         </View>
 
-        {/* --- PRIMARY ACTIONS --- */}
+        {/* --- CORE ACTIONS --- */}
         <View style={styles.heroRow}>
-          <TouchableOpacity style={styles.createCard} onPress={() => handleTactileAction("New Project", false)}>
-            <View style={styles.iconCircleLarge}><Ionicons name="add" size={40} color="black" /></View>
-            <Text style={styles.createTitle}>New Project</Text>
+          <TouchableOpacity style={styles.primeAction} onPress={() => handleAction("New Project", false)}>
+            <Ionicons name="add-circle" size={48} color="black" />
+            <Text style={styles.primeLabel}>New Project</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.magicCard} onPress={() => handleTactileAction("AI Lab", true)}>
-            <MaterialCommunityIcons name="auto-fix" size={30} color="#00E5FF" />
-            <Text style={styles.magicTitle}>AI Magic</Text>
+          <TouchableOpacity style={styles.secondAction} onPress={() => handleAction("AI Lab", true)}>
+            <MaterialCommunityIcons name="auto-fix" size={28} color="#00E5FF" />
+            <Text style={styles.secondLabel}>AI Lab</Text>
           </TouchableOpacity>
         </View>
 
-        {/* --- MOST POPULAR TOOLS (CHEF'S SPECIAL DESIGN) --- */}
-        <Text style={styles.sectionLabel}>Most Popular Tools</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.popularScroll}>
+        {/* --- GOD TOOLS (CHEF'S PICK) --- */}
+        <Text style={styles.sectionHeader}>Most Popular</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizScroll}>
           {[
-            { n: '1 Tap Reel', i: 'play-box-outline', d: 'Fast AI', icon: 'zap' },
-            { n: 'Auto Color', i: 'palette-outline', d: 'Grading', icon: 'brush' },
-            { n: 'Edit Score', i: 'star-circle-outline', d: 'Analysis', icon: 'trending-up' },
-            { n: 'Text to Video', i: 'video-plus-outline', d: 'Creation', icon: 'cpu' },
+            { n: '1 Tap Reel', i: 'zap' },
+            { n: 'Auto Color', i: 'palette' },
+            { n: 'Edit Score', i: 'star' },
+            { n: 'Text to Video', i: 'movie' },
           ].map((item, idx) => (
-            <TouchableOpacity key={idx} style={styles.glassCard} onPress={() => handleTactileAction(item.n, false)}>
-              <MaterialCommunityIcons name={item.i} size={35} color="#00E5FF" />
-              <Text style={styles.glassTitle}>{item.n}</Text>
-              <Text style={styles.glassDesc}>{item.d}</Text>
+            <TouchableOpacity key={idx} style={styles.glassCard} onPress={() => handleAction(item.n, false)}>
+              <MaterialCommunityIcons name={item.i} size={30} color="#00E5FF" />
+              <Text style={styles.cardTitle}>{item.n}</Text>
+              <Text style={styles.cardSub}>AI Powered</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        {/* --- FULL TOOLKIT GRID --- */}
-        <Text style={styles.sectionLabel}>Professional Toolkit</Text>
-        <View style={styles.toolkitGrid}>
+        {/* --- TOOLKIT GRID (STABLE) --- */}
+        <Text style={styles.sectionHeader}>Professional Toolkit</Text>
+        <View style={styles.grid}>
           {[
-            { n: 'Remove BG', i: 'image-remove' },
+            { n: 'Remove BG', i: 'layers' },
             { n: 'AutoCut', i: 'content-cut' },
-            { n: 'Vocal Iso', i: 'waveform' },
-            { n: 'Desktop', i: 'laptop', pro: true },
+            { n: 'Vocal Iso', i: 'microphone' },
+            { n: 'Desktop', i: 'laptop', p: true },
             { n: 'Smart Ads', i: 'bullhorn' },
-            { n: 'Velocity', i: 'clock-fast' },
+            { n: 'Velocity', i: 'speedometer' },
             { n: 'Enhance', i: 'shimmer' },
-            { n: 'Script AI', i: 'script-text' },
-            { n: 'Captions', i: 'closed-caption' },
+            { n: 'Captions', i: 'text' },
+            { n: 'Retouch', i: 'face-recognition' },
           ].map((tool, idx) => (
-            <TouchableOpacity key={idx} style={styles.toolItem} onPress={() => handleTactileAction(tool.n, tool.pro)}>
-              <View style={[styles.toolIconBox, tool.pro && styles.proBorderColor]}>
+            <TouchableOpacity key={idx} style={styles.gridItem} onPress={() => handleAction(tool.n, tool.p)}>
+              <View style={[styles.gridIcon, tool.p && styles.proIcon]}>
                 <MaterialCommunityIcons name={tool.i} size={28} color="white" />
-                {tool.pro && <View style={styles.miniBadge}><Text style={styles.miniText}>PRO</Text></View>}
+                {tool.p && <View style={styles.proTag}><Text style={styles.proTxt}>PRO</Text></View>}
               </View>
-              <Text style={styles.toolName}>{tool.n}</Text>
+              <Text style={styles.gridLabel}>{tool.n}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
       </ScrollView>
 
-      {/* --- ELITE NAV BAR (GLASSMORPHISM) --- */}
-      <View style={styles.bottomNav}>
+      {/* --- ELITE NAV (GLASSMORPHISM) --- */}
+      <View style={styles.footerNav}>
         {[
           { id: 'Edit', i: 'content-cut' },
-          { id: 'Templates', i: 'layers-triple-outline' },
+          { id: 'Templates', i: 'layers-outline' },
           { id: 'AI Lab', i: 'flask-outline' },
-          { id: 'Me', i: 'account-circle-outline' },
+          { id: 'Me', i: 'account-outline' },
         ].map((tab) => (
-          <TouchableOpacity key={tab.id} style={styles.navBtn} onPress={() => setActiveTab(tab.id)}>
-            <MaterialCommunityIcons 
-              name={tab.i} 
-              size={28} 
-              color={activeTab === tab.id ? "#00E5FF" : "#555"} 
-            />
-            <Text style={[styles.navText, { color: activeTab === tab.id ? "#00E5FF" : "#555" }]}>{tab.id}</Text>
+          <TouchableOpacity key={tab.id} style={styles.navItem} onPress={() => setActiveTab(tab.id)}>
+            <MaterialCommunityIcons name={tab.i} size={26} color={activeTab === tab.id ? "#00E5FF" : "#444"} />
+            <Text style={[styles.navText, { color: activeTab === tab.id ? "#00E5FF" : "#444" }]}>{tab.id}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -156,39 +143,36 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
-  header: { padding: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 0.5, borderColor: '#111' },
-  logoMain: { color: '#FFF', fontSize: 26, fontWeight: '900', letterSpacing: 1.5 },
+  header: { padding: 25, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 },
+  logoMain: { color: '#FFF', fontSize: 28, fontWeight: '900', letterSpacing: 1 },
   logoSub: { color: '#00E5FF' },
-  engineBadge: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
-  pulseDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
-  engineText: { color: '#444', fontSize: 11, fontWeight: 'bold' },
-  proMemberBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#111', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15, borderWidth: 1, borderColor: '#00E5FF55' },
-  proMemberText: { color: '#00E5FF', fontWeight: 'bold', fontSize: 12, marginLeft: 5 },
-  analyticsBar: { flexDirection: 'row', backgroundColor: '#080808', margin: 20, padding: 15, borderRadius: 25, borderWidth: 1, borderColor: '#151515' },
-  anaItem: { flex: 1, alignItems: 'center' },
-  anaVal: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
-  anaLabel: { color: '#444', fontSize: 10, marginTop: 2 },
-  anaDivider: { width: 1, height: '80%', backgroundColor: '#222' },
+  statusRow: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
+  statusDot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
+  statusText: { color: '#444', fontSize: 11, fontWeight: 'bold' },
+  shieldBtn: { backgroundColor: '#111', padding: 10, borderRadius: 15, borderWidth: 1, borderColor: '#222' },
+  statsCard: { flexDirection: 'row', backgroundColor: '#080808', marginHorizontal: 20, padding: 15, borderRadius: 20, marginBottom: 25, borderWidth: 0.5, borderColor: '#111' },
+  statBox: { flex: 1, alignItems: 'center' },
+  statVal: { color: '#FFF', fontWeight: 'bold', fontSize: 15 },
+  statSub: { color: '#444', fontSize: 10 },
   heroRow: { flexDirection: 'row', paddingHorizontal: 15, height: 160, marginBottom: 25 },
-  createCard: { flex: 1.8, backgroundColor: '#00E5FF', borderRadius: 35, justifyContent: 'center', alignItems: 'center', margin: 5, shadowColor: '#00E5FF', shadowRadius: 15, shadowOpacity: 0.4 },
-  iconCircleLarge: { backgroundColor: 'rgba(255,255,255,0.3)', padding: 10, borderRadius: 20 },
-  createTitle: { color: '#000', fontSize: 22, fontWeight: '900', marginTop: 12 },
-  magicCard: { flex: 1, backgroundColor: '#0F0F0F', borderRadius: 35, justifyContent: 'center', alignItems: 'center', margin: 5, borderWidth: 1, borderColor: '#222' },
-  magicTitle: { color: '#FFF', fontSize: 13, fontWeight: 'bold', marginTop: 10 },
-  sectionLabel: { color: '#FFF', fontSize: 18, fontWeight: 'bold', paddingHorizontal: 25, marginBottom: 15 },
-  popularScroll: { paddingLeft: 20, marginBottom: 30 },
-  glassCard: { backgroundColor: '#0A0A0A', width: 140, padding: 25, borderRadius: 30, marginRight: 15, alignItems: 'center', borderWidth: 1, borderColor: '#1A1A1A' },
-  glassTitle: { color: '#FFF', fontWeight: 'bold', fontSize: 14, marginTop: 12 },
-  glassDesc: { color: '#444', fontSize: 10, marginTop: 4 },
-  toolkitGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 15 },
-  toolItem: { width: '33.3%', alignItems: 'center', marginBottom: 25 },
-  toolIconBox: { width: 75, height: 75, backgroundColor: '#0D0D0D', borderRadius: 25, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#181818' },
-  proBorderColor: { borderColor: '#00E5FF77' },
-  miniBadge: { position: 'absolute', top: -5, right: -5, backgroundColor: '#00E5FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
-  miniText: { color: '#000', fontSize: 9, fontWeight: '900' },
-  toolName: { color: '#777', fontSize: 11, marginTop: 10, fontWeight: '600' },
-  bottomNav: { position: 'absolute', bottom: 0, width: '100%', height: 95, backgroundColor: 'rgba(0,0,0,0.95)', flexDirection: 'row', borderTopWidth: 1, borderColor: '#111', paddingTop: 15 },
-  navBtn: { flex: 1, alignItems: 'center' },
+  primeAction: { flex: 1.8, backgroundColor: '#00E5FF', borderRadius: 35, justifyContent: 'center', alignItems: 'center', margin: 5 },
+  primeLabel: { color: '#000', fontSize: 18, fontWeight: '900', marginTop: 10 },
+  secondAction: { flex: 1, backgroundColor: '#111', borderRadius: 35, justifyContent: 'center', alignItems: 'center', margin: 5, borderWidth: 1, borderColor: '#222' },
+  secondLabel: { color: '#FFF', fontSize: 13, fontWeight: 'bold', marginTop: 10 },
+  sectionHeader: { color: '#FFF', fontSize: 18, fontWeight: 'bold', paddingHorizontal: 25, marginBottom: 15 },
+  horizScroll: { paddingLeft: 20, marginBottom: 30 },
+  glassCard: { backgroundColor: '#0A0A0A', width: 140, padding: 22, borderRadius: 30, marginRight: 15, borderWidth: 1, borderColor: '#151515', alignItems: 'center' },
+  cardTitle: { color: '#FFF', fontWeight: 'bold', fontSize: 14, marginTop: 10 },
+  cardSub: { color: '#333', fontSize: 10, marginTop: 4 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 15 },
+  gridItem: { width: '33.3%', alignItems: 'center', marginBottom: 25 },
+  gridIcon: { width: 70, height: 70, backgroundColor: '#0D0D0D', borderRadius: 22, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#181818' },
+  proIcon: { borderColor: '#00E5FF44' },
+  proTag: { position: 'absolute', top: -5, right: -5, backgroundColor: '#00E5FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
+  proTxt: { color: '#000', fontSize: 9, fontWeight: '900' },
+  gridLabel: { color: '#666', fontSize: 11, marginTop: 10, fontWeight: '600' },
+  footerNav: { position: 'absolute', bottom: 0, width: '100%', height: 95, backgroundColor: 'rgba(0,0,0,0.95)', flexDirection: 'row', justifyContent: 'space-around', borderTopWidth: 1, borderColor: '#111', paddingTop: 15 },
+  navItem: { alignItems: 'center' },
   navText: { fontSize: 11, marginTop: 6, fontWeight: 'bold' }
 });
-        
+    
