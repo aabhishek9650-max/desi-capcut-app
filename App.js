@@ -1,114 +1,121 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, SafeAreaView } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      <StatusBar barStyle="light-content" />
+      
+      {/* --- HEADER --- */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.logoText}>CRYSTEL <Text style={styles.proText}>PRO</Text></Text>
-          <Text style={styles.versionText}>v1.0.3 Stable Build</Text>
+          <Text style={styles.logoMain}>CRYSTEL <Text style={styles.logoSub}>PRO</Text></Text>
+          <Text style={styles.versionTag}>v1.0.3 Stable Build</Text>
         </View>
-        <TouchableOpacity>
-          <Ionicons name="settings-outline" size={28} color="white" />
+        <TouchableOpacity style={styles.settingsBtn}>
+          <Ionicons name="settings-sharp" size={26} color="white" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Main Action Buttons */}
-        <View style={styles.mainActions}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+        
+        {/* --- TOP ACTION CARDS --- */}
+        <View style={styles.actionRow}>
           <TouchableOpacity style={styles.newProjectCard}>
-            <Ionicons name="add" size={50} color="black" />
-            <Text style={styles.newProjectText}>New Project</Text>
+            <Ionicons name="add" size={45} color="black" />
+            <Text style={styles.newProjectTitle}>New Project</Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.aiMagicCard}>
-            <MaterialCommunityIcons name="magic-staff" size={32} color="#00E5FF" />
-            <Text style={styles.aiMagicText}>AI Magic</Text>
+            <MaterialCommunityIcons name="auto-fix" size={32} color="#00E5FF" />
+            <Text style={styles.aiMagicTitle}>AI Magic</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Recent Projects Section */}
-        <View style={styles.sectionHeader}>
+        {/* --- RECENT PROJECTS --- */}
+        <View style={styles.sectionHead}>
           <Text style={styles.sectionTitle}>Recent Projects</Text>
-          <TouchableOpacity><Text style={styles.seeAllText}>See All</Text></TouchableOpacity>
+          <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recentList}>
-          {[1, 2, 3].map((item) => (
-            <View key={item} style={styles.projectItem}>
-              <View style={styles.projectThumbnail}>
-                <Ionicons name="play-circle" size={40} color="rgba(255,255,255,0.5)" />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.projectScroll}>
+          {[1, 2, 3].map((i) => (
+            <View key={i} style={styles.projectCard}>
+              <View style={styles.thumbPlaceholder}>
+                <Ionicons name="play-sharp" size={30} color="rgba(255,255,255,0.3)" />
               </View>
-              <Text style={styles.projectName}>Project_040{item}</Text>
-              <Text style={styles.projectDate}>07/04/2026</Text>
+              <Text style={styles.pName}>Project_040{i}</Text>
+              <Text style={styles.pDate}>07/04/2026</Text>
             </View>
           ))}
         </ScrollView>
 
-        {/* Popular Tools Section */}
-        <View style={styles.sectionHeader}>
+        {/* --- POPULAR TOOLS --- */}
+        <View style={styles.sectionHead}>
           <Text style={styles.sectionTitle}>Popular tools</Text>
-          <View style={styles.tabContainer}>
-            <TouchableOpacity style={styles.activeTab}><Text style={styles.activeTabText}>General</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.inactiveTab}><Text style={styles.inactiveTabText}>Marketing</Text></TouchableOpacity>
+          <View style={styles.tabBar}>
+            <TouchableOpacity style={styles.tabActive}><Text style={styles.tabTextActive}>General</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.tabInactive}><Text style={styles.tabTextInactive}>Marketing</Text></TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.toolsGrid}>
           {[
-            { name: 'Remove BG', icon: 'account-remove-outline' },
-            { name: 'AutoCut', icon: 'flash-outline' },
-            { name: 'Retouch', icon: 'flask-outline' },
-            { name: 'Auto Captions', icon: 'closed-caption-outline' },
-            { name: 'AI Script', icon: 'file-document-outline' },
-            { name: 'Teleprompter', icon: 'television' },
-            { name: 'Image to Video', icon: 'image-outline' },
-            { name: 'Vocal Isolate', icon: 'microphone-outline' },
-          ].map((tool, index) => (
-            <TouchableOpacity key={index} style={styles.toolItem}>
-              <View style={styles.toolIconBox}>
-                <MaterialCommunityIcons name={tool.icon} size={30} color="white" />
+            { n: 'Remove BG', i: 'account-off-outline' },
+            { n: 'AutoCut', i: 'lightning-bolt-outline' },
+            { n: 'Retouch', i: 'beaker-outline' },
+            { n: 'Auto Captions', i: 'account-voice' },
+            { n: 'AI Script', i: 'file-document-edit-outline' },
+            { n: 'Teleprompter', i: 'monitor-shimmer' },
+            { n: 'Image to Video', i: 'image-multiple-outline' },
+            { n: 'Vocal Isolate', i: 'microphone-minus-outline' },
+            { n: 'Desktop Edit', i: 'laptop', pro: true },
+            { n: 'Smart Ads', i: 'megaphone-outline' },
+            { n: 'Velocity', i: 'speedometer-outline' },
+            { n: 'Enhance', i: 'auto-fix' },
+          ].map((tool, idx) => (
+            <TouchableOpacity key={idx} style={styles.toolBtn}>
+              <View style={styles.iconCircle}>
+                <MaterialCommunityIcons name={tool.i} size={28} color="white" />
+                {tool.pro && <View style={styles.proBadge}><Text style={styles.proText}>Pro</Text></View>}
               </View>
-              <Text style={styles.toolText}>{tool.name}</Text>
+              <Text style={styles.toolLabel}>{tool.n}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Banner Section */}
-        <TouchableOpacity style={styles.creatorBanner}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <MaterialCommunityIcons name="rocket-launch" size={35} color="#00E5FF" />
-            <View style={{marginLeft: 15}}>
+        {/* --- BANNER --- */}
+        <TouchableOpacity style={styles.banner}>
+          <View style={styles.bannerLeft}>
+            <MaterialCommunityIcons name="rocket-launch" size={30} color="#00E5FF" />
+            <View style={{ marginLeft: 15 }}>
               <Text style={styles.bannerTitle}>Become a Creator</Text>
               <Text style={styles.bannerSub}>Get verified badge & share templates</Text>
             </View>
           </View>
-          <Ionicons name="chevron-forward" size={24} color="#555" />
+          <Ionicons name="chevron-forward" size={20} color="#444" />
         </TouchableOpacity>
-        
-        <View style={{height: 100}} /> 
+
       </ScrollView>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* --- BOTTOM NAVIGATION --- */}
+      <View style={styles.navBar}>
         <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="content-cut" size={28} color="#00E5FF" />
-          <Text style={[styles.navText, {color: '#00E5FF'}]}>Edit</Text>
+          <MaterialCommunityIcons name="content-cut" size={26} color="#00E5FF" />
+          <Text style={[styles.navLabel, { color: '#00E5FF' }]}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="layers-outline" size={28} color="#888" />
-          <Text style={styles.navText}>Templates</Text>
+          <MaterialCommunityIcons name="layers-outline" size={26} color="#888" />
+          <Text style={styles.navLabel}>Templates</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <MaterialCommunityIcons name="flask-outline" size={28} color="#888" />
-          <Text style={styles.navText}>AI Lab</Text>
+          <MaterialCommunityIcons name="flask-outline" size={26} color="#888" />
+          <Text style={styles.navLabel}>AI Lab</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="person-outline" size={28} color="#888" />
-          <Text style={styles.navText}>Me</Text>
+          <Ionicons name="person-outline" size={26} color="#888" />
+          <Text style={styles.navLabel}>Me</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -116,38 +123,40 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'black', paddingTop: 40 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginBottom: 20 },
-  logoText: { color: 'white', fontSize: 26, fontWeight: 'bold', letterSpacing: 1 },
-  proText: { color: '#00E5FF' },
-  versionText: { color: '#555', fontSize: 12 },
-  mainActions: { flexDirection: 'row', paddingHorizontal: 20, gap: 15, marginBottom: 30 },
-  newProjectCard: { flex: 2, backgroundColor: '#00E5FF', height: 180, borderRadius: 30, justifyContent: 'center', alignItems: 'center' },
-  newProjectText: { color: 'black', fontSize: 20, fontWeight: 'bold', marginTop: 10 },
-  aiMagicCard: { flex: 1, backgroundColor: '#1A1A1A', borderRadius: 30, justifyContent: 'center', alignItems: 'center' },
-  aiMagicText: { color: 'white', marginTop: 10, fontWeight: '500' },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 15 },
-  sectionTitle: { color: 'white', fontSize: 20, fontWeight: 'bold' },
-  seeAllText: { color: '#00E5FF', fontSize: 14 },
-  recentList: { paddingLeft: 20, marginBottom: 30 },
-  projectItem: { marginRight: 20 },
-  projectThumbnail: { width: 140, height: 140, backgroundColor: '#1A1A1A', borderRadius: 25, justifyContent: 'center', alignItems: 'center' },
-  projectName: { color: 'white', marginTop: 8, fontWeight: 'bold' },
-  projectDate: { color: '#555', fontSize: 12 },
-  tabContainer: { flexDirection: 'row', backgroundColor: '#1A1A1A', borderRadius: 20, padding: 4 },
-  activeTab: { backgroundColor: '#333', paddingHorizontal: 15, paddingVertical: 6, borderRadius: 15 },
-  activeTabText: { color: 'white', fontWeight: 'bold' },
-  inactiveTab: { paddingHorizontal: 15, paddingVertical: 6 },
-  inactiveTabText: { color: '#555' },
+  container: { flex: 1, backgroundColor: '#000' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, marginTop: 10 },
+  logoMain: { color: '#FFF', fontSize: 28, fontWeight: '900', letterSpacing: 1 },
+  logoSub: { color: '#00E5FF' },
+  versionTag: { color: '#444', fontSize: 12, fontWeight: '600' },
+  actionRow: { flexDirection: 'row', paddingHorizontal: 15, height: 180, marginBottom: 20 },
+  newProjectCard: { flex: 1.8, backgroundColor: '#00E5FF', borderRadius: 30, justifyContent: 'center', alignItems: 'center', margin: 5 },
+  newProjectTitle: { color: '#000', fontSize: 20, fontWeight: 'bold', marginTop: 10 },
+  aiMagicCard: { flex: 1, backgroundColor: '#121212', borderRadius: 30, justifyContent: 'center', alignItems: 'center', margin: 5 },
+  aiMagicTitle: { color: '#FFF', fontSize: 14, marginTop: 10, fontWeight: '600' },
+  sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginVertical: 15 },
+  sectionTitle: { color: '#FFF', fontSize: 22, fontWeight: 'bold' },
+  seeAll: { color: '#00E5FF', fontWeight: '600' },
+  projectScroll: { paddingLeft: 20 },
+  projectCard: { marginRight: 15 },
+  thumbPlaceholder: { width: 150, height: 150, backgroundColor: '#121212', borderRadius: 25, justifyContent: 'center', alignItems: 'center' },
+  pName: { color: '#FFF', marginTop: 10, fontWeight: 'bold', fontSize: 14 },
+  pDate: { color: '#444', fontSize: 12 },
+  tabBar: { flexDirection: 'row', backgroundColor: '#121212', borderRadius: 25, padding: 4 },
+  tabActive: { backgroundColor: '#222', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 20 },
+  tabTextActive: { color: '#FFF', fontWeight: 'bold' },
+  tabTextInactive: { color: '#444', paddingHorizontal: 10 },
   toolsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 10 },
-  toolItem: { width: '25%', alignItems: 'center', marginBottom: 20 },
-  toolIconBox: { width: 60, height: 60, backgroundColor: '#111', borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-  toolText: { color: '#888', fontSize: 11, marginTop: 8, textAlign: 'center' },
-  creatorBanner: { backgroundColor: '#111', marginHorizontal: 20, borderRadius: 30, padding: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  bannerTitle: { color: 'white', fontSize: 18, fontWeight: 'bold' },
-  bannerSub: { color: '#555', fontSize: 12 },
-  bottomNav: { position: 'absolute', bottom: 0, width: '100%', height: 80, backgroundColor: 'black', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', borderTopWidth: 0.5, borderTopColor: '#222' },
+  toolBtn: { width: '25%', alignItems: 'center', marginBottom: 25 },
+  iconCircle: { width: 65, height: 65, backgroundColor: '#121212', borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
+  toolLabel: { color: '#777', fontSize: 11, marginTop: 8, textAlign: 'center' },
+  proBadge: { position: 'absolute', top: -5, right: -5, backgroundColor: '#00E5FF', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 8 },
+  proText: { color: '#000', fontSize: 10, fontWeight: 'bold' },
+  banner: { backgroundColor: '#0A0A0A', marginHorizontal: 20, padding: 22, borderRadius: 30, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, borderWidth: 1, borderColor: '#111' },
+  bannerLeft: { flexDirection: 'row', alignItems: 'center' },
+  bannerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+  bannerSub: { color: '#444', fontSize: 12, marginTop: 2 },
+  navBar: { position: 'absolute', bottom: 0, width: '100%', height: 90, backgroundColor: '#000', flexDirection: 'row', justifyContent: 'space-around', borderTopWidth: 1, borderTopColor: '#111', paddingTop: 10 },
   navItem: { alignItems: 'center' },
-  navText: { fontSize: 12, marginTop: 4 }
+  navLabel: { fontSize: 12, marginTop: 5, fontWeight: '600' }
 });
     
